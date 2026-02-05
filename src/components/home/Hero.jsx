@@ -12,16 +12,6 @@ function Hero({ searchQuery, onSearchChange, onSearch }) {
   return (
     <section className="bg-gradient-to-b from-primary-50 to-white py-16">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        {/* Título principal */}
-        <h1 className="text-4xl sm:text-5xl font-serif font-bold text-gray-900 mb-4">
-          Encontre seu próximo livro
-        </h1>
-
-        {/* Subtítulo */}
-        <p className="text-lg text-gray-600 mb-8">
-          Busque por título, autor, palavra-chave ou utilize os filtros
-        </p>
-
         {/* Campo de busca GRANDE e CENTRALIZADO */}
         <form onSubmit={handleSubmit} className="relative">
           <div className="relative">
@@ -29,7 +19,7 @@ function Hero({ searchQuery, onSearchChange, onSearch }) {
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Digite para buscar..."
+              placeholder="Busque por título, autor, palavra-chave ou utilize os filtros"
               className="w-full px-6 py-4 pr-14 text-lg rounded-xl border border-gray-300
                        focus:outline-none focus:border-primary-500
                        transition-all duration-200 shadow-md"
