@@ -150,24 +150,22 @@ function About() {
             Objetivo Pastoral
           </h2>
           <p className="text-gray-700 leading-relaxed mb-4">
-            Este catálogo foi criado com as seguintes finalidades pastorais:
+            Este catálogo tem como finalidade apoiar o ministério pastoral do
+            Pe. Carlos Alberto Pereira, oferecendo recursos que auxiliem na
+            formação, na evangelização e na vida espiritual dos fiéis:
           </p>
           <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
             <li>
-              <strong>Formação:</strong> Auxiliar na formação teológica e
+              <strong>Formação:</strong> Apoiar a educação teológica e
               espiritual de seminaristas, catequistas e agentes pastorais.
             </li>
             <li>
               <strong>Evangelização:</strong> Facilitar o acesso a obras que
-              ajudam na evangelização e catequese.
-            </li>
-            <li>
-              <strong>Capelania Hospitalar:</strong> Disponibilizar recursos
-              para o acompanhamento espiritual de enfermos e suas famílias.
+              contribuem para a catequese e o anúncio da fé.
             </li>
             <li>
               <strong>Vida Espiritual:</strong> Oferecer literatura que
-              aprofunde a oração, os sacramentos e a vida devota.
+              aprofunde a oração, a devoção e o crescimento na vida cristã.
             </li>
           </ul>
         </section>
