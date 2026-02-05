@@ -31,7 +31,7 @@ function Hero({ searchQuery, onSearchChange, onSearch }) {
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Digite para buscar..."
               className="w-full px-6 py-4 pr-14 text-lg rounded-xl border-2 border-gray-300
-                       focus:border-primary-500 focus:ring-4 focus:ring-primary-100
+                       focus:outline-none focus:border-gray-400
                        transition-all duration-200 shadow-md"
               autoFocus
             />
@@ -48,11 +48,6 @@ function Hero({ searchQuery, onSearchChange, onSearch }) {
             </button>
           </div>
         </form>
-
-        {/* Dica de uso */}
-        <p className="text-sm text-gray-500 mt-4">
-          Dica: Use os filtros abaixo para refinar sua busca
-        </p>
       </div>
     </section>
   );
