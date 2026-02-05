@@ -62,7 +62,7 @@ function About() {
             <img
               src="/PadreCarlos.jpg"
               alt="Pe. Carlos Alberto Pereira"
-              className="rounded-lg shadow-lg max-w-md w-full"
+              className="rounded-lg shadow-lg w-full max-w-4xl"
             />
           </div>
 
