@@ -16,6 +16,16 @@ function About() {
         </p>
       </div>
 
+      {/* Citação */}
+      <div className="text-center mb-12 pb-8 border-b border-gray-200">
+        <p className="text-lg text-gray-600 font-serif italic">
+          "A leitura santa nos ilumina, a meditação nos alimenta, a oração nos eleva."
+        </p>
+        <p className="text-sm text-gray-500 mt-2">
+          – São Bernardo de Claraval
+        </p>
+      </div>
+
       {/* Conteúdo */}
       <div className="prose prose-lg max-w-none">
         {/* O que é */}
@@ -158,18 +168,11 @@ function About() {
           <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
             Nota sobre Direitos Autorais
           </h2>
-          <div className="bg-gray-50 rounded-lg p-6">
-            <p className="text-gray-700 leading-relaxed mb-4">
-              Este catálogo tem finalidade <strong>exclusivamente informativa e pastoral</strong>.
-              Não disponibilizamos os textos completos das obras, apenas informações bibliográficas
-              e descritivas.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              Todas as obras aqui catalogadas são propriedade de suas respectivas editoras e autores.
-              Respeitamos integralmente os direitos autorais. Para adquirir as obras, recomendamos
-              contato direto com as editoras católicas ou livrarias especializadas.
-            </p>
-          </div>
+          <p className="text-gray-700 leading-relaxed">
+            Todas as obras aqui catalogadas são propriedade de suas respectivas editoras e autores.
+            Respeitamos integralmente os direitos autorais. Para adquirir as obras, recomendamos
+            contato direto com as editoras católicas ou livrarias especializadas.
+          </p>
         </section>
 
         {/* Contato */}
@@ -183,16 +186,6 @@ function About() {
             Nossa Senhora da Saúde, em Campo Grande – MS.
           </p>
         </section>
-      </div>
-
-      {/* Frase final */}
-      <div className="text-center mt-12 pt-8 border-t border-gray-200">
-        <p className="text-lg text-gray-600 font-serif italic">
-          "A leitura santa nos ilumina, a meditação nos alimenta, a oração nos eleva."
-        </p>
-        <p className="text-sm text-gray-500 mt-2">
-          – São Bernardo de Claraval
-        </p>
       </div>
     </div>
   );

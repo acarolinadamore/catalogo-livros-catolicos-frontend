@@ -18,7 +18,7 @@ function Header() {
               </svg>
             </div>
             <div>
-              <h1 className="text-xl font-serif font-bold text-gray-900">
+              <h1 className="text-lg sm:text-xl font-serif font-bold text-gray-900">
                 Biblioteca Católica
               </h1>
             </div>
