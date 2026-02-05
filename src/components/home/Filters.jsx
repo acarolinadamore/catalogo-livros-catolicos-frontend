@@ -45,7 +45,7 @@ function Filters({ filters, onFilterChange, filterOptions }) {
               value={filters.content_type || ''}
               onChange={(e) => onFilterChange('content_type', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg
-                       focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
+                       focus:outline-none focus:border-primary-500"
             >
               <option value="">Todos</option>
               {filterOptions.contentTypes?.map(type => (
@@ -63,7 +63,7 @@ function Filters({ filters, onFilterChange, filterOptions }) {
               value={filters.intercessor || ''}
               onChange={(e) => onFilterChange('intercessor', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg
-                       focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
+                       focus:outline-none focus:border-primary-500"
             >
               <option value="">Todos</option>
               {filterOptions.intercessors?.map(intercessor => (
@@ -81,7 +81,7 @@ function Filters({ filters, onFilterChange, filterOptions }) {
               value={filters.pastoral_use || ''}
               onChange={(e) => onFilterChange('pastoral_use', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg
-                       focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
+                       focus:outline-none focus:border-primary-500"
             >
               <option value="">Todos</option>
               {filterOptions.pastoralUses?.map(use => (
@@ -99,7 +99,7 @@ function Filters({ filters, onFilterChange, filterOptions }) {
               value={filters.publisher || ''}
               onChange={(e) => onFilterChange('publisher', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg
-                       focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
+                       focus:outline-none focus:border-primary-500"
             >
               <option value="">Todas</option>
               {filterOptions.publishers?.map(publisher => (
@@ -125,7 +125,7 @@ function Filters({ filters, onFilterChange, filterOptions }) {
                     onChange={(e) => onFilterChange('year_min', e.target.value)}
                     placeholder={filterOptions.yearRange.min.toString()}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg
-                             focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
+                             focus:outline-none focus:border-primary-500"
                   />
                 </div>
                 <div>
@@ -138,7 +138,7 @@ function Filters({ filters, onFilterChange, filterOptions }) {
                     onChange={(e) => onFilterChange('year_max', e.target.value)}
                     placeholder={filterOptions.yearRange.max.toString()}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg
-                             focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
+                             focus:outline-none focus:border-primary-500"
                   />
                 </div>
               </div>
