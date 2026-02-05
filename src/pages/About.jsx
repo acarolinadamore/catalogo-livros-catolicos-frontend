@@ -124,8 +124,13 @@ function About() {
             Desenvolvimento do Sistema
           </h2>
           <p className="text-gray-700 leading-relaxed mb-4">
-            O sistema foi idealizado e desenvolvido por <strong>Ana Carolina Damore</strong>, com foco
-            em uma solução dinâmica, organizada e escalável para a catalogação de livros religiosos.
+            Este sistema foi idealizado e desenvolvido por <strong>Ana Carolina Damore</strong>, com foco
+            em uma solução dinâmica, organizada e escalável para a catalogação e consulta de livros religiosos
+            católicos.
+          </p>
+          <p className="text-gray-700 leading-relaxed mb-4">
+            O trabalho foi realizado de forma <strong>voluntária e gratuita</strong>, em espírito de serviço
+            e gratidão a Deus, colocando conhecimentos técnicos a serviço de uma iniciativa de valor espiritual.
           </p>
           <div className="bg-gray-50 rounded-lg p-6">
             <p className="text-gray-700 leading-relaxed mb-3">
@@ -134,7 +139,7 @@ function About() {
             <div className="space-y-2 text-gray-700">
               <p className="flex items-center">
                 <span className="mr-2">🌐</span>
-                <span>Site: <a href="https://anadamore.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 underline">anadamore.com</a></span>
+                <span>Site: <a href="https://www.admtecnologia.com.br" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 underline">www.admtecnologia.com.br</a></span>
               </p>
               <p className="flex items-center">
                 <span className="mr-2">📱</span>
