@@ -30,7 +30,7 @@ function Header() {
               to="/"
               className="text-gray-700 hover:text-primary-600 font-medium transition-colors"
             >
-              Catálogo
+              Buscar
             </Link>
             <Link
               to="/sobre"
@@ -38,13 +38,6 @@ function Header() {
             >
               Sobre
             </Link>
-            <button
-              disabled
-              className="text-gray-400 font-medium cursor-not-allowed"
-              title="Em breve"
-            >
-              Entrar
-            </button>
           </nav>
         </div>
       </div>

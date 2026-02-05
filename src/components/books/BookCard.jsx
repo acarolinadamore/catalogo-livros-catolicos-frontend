@@ -5,19 +5,6 @@
 
 import { Link } from 'react-router-dom';
 
-// Ícones por tipo de conteúdo
-const contentTypeIcons = {
-  'Bíblia': '📖',
-  'Teologia': '✝️',
-  'Espiritualidade': '🕊️',
-  'Catequese': '📚',
-  'Liturgia': '⛪',
-  'História da Igreja': '🏛️',
-  'Doutrina Social': '🤝',
-  'Vida de Santos': '👼',
-  'Documentos da Igreja': '📜'
-};
-
 function BookCard({ book }) {
   return (
     <Link
@@ -34,7 +21,7 @@ function BookCard({ book }) {
             className="w-full h-full object-cover rounded-lg"
           />
         ) : (
-          <span>{contentTypeIcons[book.content_type] || '📕'}</span>
+          <span>📖</span>
         )}
       </div>
 
