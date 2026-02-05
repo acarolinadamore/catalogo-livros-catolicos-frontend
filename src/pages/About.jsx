@@ -51,12 +51,31 @@ function About() {
 
         {/* Pe. Carlos */}
         <section className="mb-10">
-          <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6 text-center">
             Pe. Carlos Alberto Pereira
           </h2>
+
+          {/* Foto do Pe. Carlos */}
+          <div className="mb-6 flex justify-center">
+            <img
+              src="/Pe.-Carlos-Alberto-2048x1367.png"
+              alt="Pe. Carlos Alberto Pereira"
+              className="rounded-lg shadow-lg max-w-md w-full"
+            />
+          </div>
+
           <div className="bg-primary-50 border-l-4 border-primary-600 rounded-r-lg p-6 mb-4">
             <p className="text-gray-700 leading-relaxed mb-2">
+              <strong>Vigário Paroquial da Paróquia Pessoal Nossa Senhora da Saúde</strong>
+            </p>
+            <p className="text-gray-700 leading-relaxed mb-2">
               <strong>Arquidiocese:</strong> Campo Grande – MS
+            </p>
+            <p className="text-gray-700 leading-relaxed mb-2">
+              <strong>Data de Nascimento:</strong> 18/01/1967
+            </p>
+            <p className="text-gray-700 leading-relaxed mb-2">
+              <strong>Ordenação:</strong> 01/08/2013
             </p>
             <p className="text-gray-700 leading-relaxed mb-2">
               <strong>Atuação Pastoral:</strong>
@@ -67,10 +86,13 @@ function About() {
             </ul>
           </div>
           <p className="text-gray-700 leading-relaxed mb-4">
+            As obras aqui catalogadas refletem uma espiritualidade voltada para o cuidado, a consolação
+            e o crescimento na fé.
+          </p>
+          <p className="text-gray-700 leading-relaxed mb-4">
             Este catálogo reúne o acervo pessoal do Pe. Carlos Alberto Pereira, fruto de anos de
-            estudo, ministério sacerdotal e acompanhamento pastoral. As obras aqui catalogadas são
-            utilizadas em sua atuação na capelania hospitalar e na formação de fiéis, refletindo
-            uma espiritualidade voltada para o cuidado, a consolação e o crescimento na fé.
+            estudo, ministério sacerdotal e acompanhamento pastoral, utilizado em sua atuação na
+            capelania hospitalar e na formação de fiéis.
           </p>
 
           {/* Compartilhar */}

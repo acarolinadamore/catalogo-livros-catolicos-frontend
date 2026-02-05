@@ -9,8 +9,8 @@ function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200 mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Layout 3 colunas em desktop, empilhado em mobile */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+        {/* Layout melhorado - 2 colunas principais */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
 
           {/* Coluna Esquerda - Biblioteca Católica */}
           <div>
@@ -28,7 +28,7 @@ function Footer() {
             </p>
           </div>
 
-          {/* Coluna Centro - Links Úteis */}
+          {/* Coluna Direita - Links Úteis */}
           <div>
             <h3 className="font-serif font-bold text-gray-900 mb-3">
               Links Úteis
@@ -57,20 +57,13 @@ function Footer() {
               </li>
             </ul>
           </div>
-
-          {/* Coluna Direita - Feito para a Glória de Deus */}
-          <div className="md:text-right">
-            <p className="text-gray-700 font-serif italic mb-2">
-              Feito para a glória de Deus
-            </p>
-            <p className="text-xs text-gray-500">
-              ✝️
-            </p>
-          </div>
         </div>
 
-        {/* Copyright */}
+        {/* Copyright e Mensagem */}
         <div className="text-center pt-6 border-t border-gray-200">
+          <p className="text-xs text-gray-500 mb-2">
+            Feito para a glória de Deus
+          </p>
           <p className="text-xs text-gray-400">
             © {currentYear} Biblioteca Católica. Todos os direitos reservados.
           </p>
