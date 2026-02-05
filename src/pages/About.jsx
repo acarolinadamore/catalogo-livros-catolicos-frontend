@@ -98,21 +98,23 @@ function About() {
             Colaboração e Iniciativa
           </h2>
           <p className="text-gray-700 leading-relaxed mb-4">
-            Este projeto também contou com a iniciativa e colaboração de <strong>Antonio Tito</strong>,
-            que se dispôs a auxiliar o Pe. Carlos na organização do acervo.
+            Este projeto nasceu a partir da iniciativa de <strong>Antonio Tito</strong>, que se dispôs
+            a auxiliar o Pe. Carlos Alberto Pereira na organização de sua biblioteca pessoal.
           </p>
           <div className="bg-primary-50 border-l-4 border-primary-600 rounded-r-lg p-6 mb-4">
             <p className="text-gray-700 leading-relaxed mb-3">
-              <strong>Antonio Tito:</strong>
+              Movido pelo desejo de ajudar e servir, <strong>Antonio Tito:</strong>
             </p>
-            <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4">
-              <li>Fotografou os livros</li>
-              <li>Auxiliou no levantamento de informações como autor e título</li>
-              <li>Teve a iniciativa inicial de buscar uma forma de ajudar o padre na catalogação de sua biblioteca</li>
+            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
+              <li>Fotografou os livros do acervo</li>
+              <li>Auxiliou no levantamento de informações como título e autor</li>
+              <li>Teve a iniciativa inicial de buscar uma forma prática de apoiar o padre na catalogação de sua biblioteca</li>
             </ul>
           </div>
           <p className="text-gray-700 leading-relaxed">
-            Sua colaboração foi fundamental para viabilizar a organização inicial do acervo.
+            Sua contribuição foi fundamental para viabilizar a organização inicial do acervo e reflete
+            um gesto concreto de caridade e serviço ao próximo, colocando o tempo e os talentos a serviço
+            da Igreja.
           </p>
         </section>
 
