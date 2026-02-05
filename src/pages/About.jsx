@@ -35,19 +35,20 @@ function About() {
           <p className="text-gray-700 leading-relaxed mb-4">
             A Biblioteca Católica é uma plataforma digital de catalogação e
             consulta de livros religiosos católicos, criada com o objetivo de
-            facilitar o acesso ao patrimônio espiritual da Igreja, promovendo o
-            estudo, a formação e a vida espiritual.
+            organizar e facilitar o acesso ao acervo pessoal do Pe. Carlos
+            Alberto Pereira, promovendo o estudo, a formação e a vida
+            espiritual.
           </p>
           <p className="text-gray-700 leading-relaxed mb-4">
-            O projeto foi desenvolvido inicialmente para o acervo pessoal do Pe.
-            Carlos Alberto Pereira, sacerdote da Arquidiocese de Campo Grande –
-            MS, reunindo obras de espiritualidade, teologia, catequese,
-            liturgia, mariologia e vida dos santos.
+            O projeto reúne obras de espiritualidade, teologia, catequese,
+            liturgia, mariologia e vida dos santos, utilizadas no contexto do
+            ministério sacerdotal e da atuação pastoral do sacerdote na
+            Arquidiocese de Campo Grande – MS.
           </p>
           <p className="text-gray-700 leading-relaxed">
             A plataforma permite a busca por título, autor, palavra-chave e
-            filtros específicos, oferecendo uma experiência simples, moderna e
-            focada na consulta.
+            filtros específicos, oferecendo uma experiência simples, organizada
+            e focada na consulta do acervo.
           </p>
         </section>
 
