@@ -349,7 +349,7 @@ function ListarLivros() {
         {/* Cabeçalho com botão Cadastrar */}
         <div className="mb-10 flex justify-between items-center">
           <h1 className="text-3xl font-serif font-bold text-gray-900">
-            Gerenciar Livros
+            Listar Livros
           </h1>
           <button
             onClick={() => navigate('/cadastrar')}
