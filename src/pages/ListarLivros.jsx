@@ -345,9 +345,9 @@ function ListarLivros() {
         }
       `}</style>
 
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Cabeçalho com botão Cadastrar */}
-        <div className="mb-6 flex justify-between items-center">
+        <div className="mb-10 flex justify-between items-center">
           <h1 className="text-3xl font-serif font-bold text-gray-900">
             Gerenciar Livros
           </h1>
@@ -361,18 +361,18 @@ function ListarLivros() {
 
         {/* Campo de busca grande */}
         <div className="mb-6">
-          <div className="relative max-w-3xl">
+          <div className="relative">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Busque por título, autor, editora, categoria ou palavra-chave"
-              className="w-full px-6 py-4 pr-14 text-lg rounded-xl border border-gray-300
+              className="w-full px-5 py-3 pr-12 text-base rounded-lg border border-gray-300
                        focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200
-                       transition-all duration-200 shadow-sm"
+                       transition-all duration-200 shadow-sm placeholder:text-sm"
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
@@ -408,7 +408,7 @@ function ListarLivros() {
               <p>Nenhum livro cadastrado ainda.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">
+            <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full divide-y divide-gray-200 relative">
               <thead className="bg-gray-50 sticky top-0 z-10">
                 <tr>
@@ -430,7 +430,7 @@ function ListarLivros() {
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
                     Índice
                   </th>
-                  <th className="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                  <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
                     Ações
                   </th>
                 </tr>
@@ -442,7 +442,7 @@ function ListarLivros() {
                       name="titulo"
                       value={filtros.titulo}
                       onChange={handleFiltroChange}
-                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-2 py-1.5 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </th>
                   <th className="px-3 py-2 bg-gray-100">
@@ -451,7 +451,7 @@ function ListarLivros() {
                       name="autor"
                       value={filtros.autor}
                       onChange={handleFiltroChange}
-                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-2 py-1.5 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </th>
                   <th className="px-3 py-2 bg-gray-100">
@@ -460,7 +460,7 @@ function ListarLivros() {
                       name="editora"
                       value={filtros.editora}
                       onChange={handleFiltroChange}
-                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-2 py-1.5 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </th>
                   <th className="px-3 py-2 bg-gray-100">
@@ -469,7 +469,7 @@ function ListarLivros() {
                       name="categoria"
                       value={filtros.categoria}
                       onChange={handleFiltroChange}
-                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-2 py-1.5 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </th>
                   <th className="px-3 py-2 bg-gray-100">
@@ -478,7 +478,7 @@ function ListarLivros() {
                       name="ano"
                       value={filtros.ano}
                       onChange={handleFiltroChange}
-                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-2 py-1.5 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </th>
                   <th className="px-3 py-2 bg-gray-100">
@@ -487,7 +487,7 @@ function ListarLivros() {
                       name="indice"
                       value={filtros.indice}
                       onChange={handleFiltroChange}
-                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-2 py-1.5 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </th>
                   <th className="px-3 py-2 bg-gray-100"></th>
@@ -773,9 +773,9 @@ function ListarLivros() {
                           </span>
                         ) : '-'}
                       </td>
-                      <td className="px-3 py-4 text-right text-sm font-medium">
+                      <td className="px-3 py-4 text-center text-sm font-medium">
                         {showDeleteConfirm === livro.id ? (
-                          <div className="flex gap-2 justify-end items-center">
+                          <div className="flex gap-2 justify-center items-center">
                             <span className="text-gray-700 text-sm mr-2">Confirmar exclusão?</span>
                             <button
                               onClick={() => handleDelete(livro.id)}
@@ -791,7 +791,7 @@ function ListarLivros() {
                             </button>
                           </div>
                         ) : (
-                          <div className="flex gap-2 justify-end items-center">
+                          <div className="flex gap-2 justify-center items-center">
                             <button
                               onClick={() => handleView(livro.id)}
                               className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
