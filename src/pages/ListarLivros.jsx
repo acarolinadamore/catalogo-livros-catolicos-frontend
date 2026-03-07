@@ -22,7 +22,8 @@ function ListarLivros() {
     descricao: '',
     isbn: '',
     capa_url: '',
-    indice: ''
+    indice: '',
+    tags: ''
   });
   const [uploadMethod, setUploadMethod] = useState('file');
   const [selectedFile, setSelectedFile] = useState(null);
@@ -37,6 +38,21 @@ function ListarLivros() {
     indice: ''
   });
   const [searchQuery, setSearchQuery] = useState('');
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [categorias, setCategorias] = useState([
+    'Espiritualidade',
+    'Teologia',
+    'Catequese',
+    'Liturgia',
+    'Mariologia',
+    'Santos',
+    'Bíblia',
+    'História da Igreja',
+    'Doutrina Social',
+    'Filosofia',
+    'Outros'
+  ]);
+  const [novaCategoria, setNovaCategoria] = useState('');
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -56,7 +72,8 @@ function ListarLivros() {
         livro.author.toLowerCase().includes(query) ||
         (livro.publisher && livro.publisher.toLowerCase().includes(query)) ||
         (livro.category && livro.category.toLowerCase().includes(query)) ||
-        (livro.index_text && livro.index_text.toLowerCase().includes(query))
+        (livro.index_text && livro.index_text.toLowerCase().includes(query)) ||
+        (livro.tags && livro.tags.toLowerCase().includes(query))
       );
     }
 
@@ -138,7 +155,8 @@ function ListarLivros() {
       descricao: livro.description || '',
       isbn: livro.isbn || '',
       capa_url: livro.cover_url || '',
-      indice: livro.index_text || ''
+      indice: livro.index_text || '',
+      tags: livro.tags || ''
     });
     setSelectedFile(null);
     setUploadMethod('file');
@@ -156,7 +174,8 @@ function ListarLivros() {
       descricao: '',
       isbn: '',
       capa_url: '',
-      indice: ''
+      indice: '',
+      tags: ''
     });
     setSelectedFile(null);
     setUploadMethod('file');
@@ -303,6 +322,19 @@ function ListarLivros() {
     navigate(`/livro/${id}`, { state: { from: '/listar' } });
   };
 
+  const handleAddCategoria = () => {
+    if (novaCategoria.trim() && !categorias.includes(novaCategoria.trim())) {
+      setCategorias([...categorias, novaCategoria.trim()].sort());
+      setNovaCategoria('');
+    }
+  };
+
+  const handleRemoveCategoria = (categoria) => {
+    if (confirm(`Deseja realmente remover a categoria "${categoria}"?`)) {
+      setCategorias(categorias.filter(cat => cat !== categoria));
+    }
+  };
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -359,8 +391,17 @@ function ListarLivros() {
           </button>
         </div>
 
-        {/* Campo de busca grande */}
+        {/* Contador de livros e Campo de busca */}
         <div className="mb-6">
+          <div className="flex justify-end mb-2">
+            <p className="text-sm font-medium text-gray-700">
+              {searchQuery || filtros.titulo || filtros.autor || filtros.editora || filtros.categoria || filtros.ano || filtros.indice ? (
+                <>Exibindo {livrosFiltrados.length} de {livros.length} livro{livros.length !== 1 ? 's' : ''}</>
+              ) : (
+                <>Total de {livrosFiltrados.length} livro{livrosFiltrados.length !== 1 ? 's' : ''} cadastrado{livrosFiltrados.length !== 1 ? 's' : ''}</>
+              )}
+            </p>
+          </div>
           <div className="relative">
             <input
               type="text"
@@ -378,15 +419,6 @@ function ListarLivros() {
             </div>
           </div>
         </div>
-
-        {/* Contador de livros */}
-        <p className="text-sm text-gray-600 mb-4">
-          {searchQuery || filtros.titulo || filtros.autor || filtros.editora || filtros.categoria || filtros.ano || filtros.indice ? (
-            <>Exibindo {livrosFiltrados.length} de {livros.length} livro{livros.length !== 1 ? 's' : ''}</>
-          ) : (
-            <>Total de {livrosFiltrados.length} livro{livrosFiltrados.length !== 1 ? 's' : ''} cadastrado{livrosFiltrados.length !== 1 ? 's' : ''}</>
-          )}
-        </p>
 
       {/* Mensagem de feedback */}
       {message.text && (
@@ -574,25 +606,29 @@ function ListarLivros() {
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Categoria <span className="text-gray-400 text-xs font-normal">(opcional)</span>
                               </label>
-                              <select
-                                name="categoria"
-                                value={formData.categoria}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                              >
-                                <option value="">Selecione uma categoria</option>
-                                <option value="Espiritualidade">Espiritualidade</option>
-                                <option value="Teologia">Teologia</option>
-                                <option value="Catequese">Catequese</option>
-                                <option value="Liturgia">Liturgia</option>
-                                <option value="Mariologia">Mariologia</option>
-                                <option value="Santos">Santos</option>
-                                <option value="Bíblia">Bíblia</option>
-                                <option value="História da Igreja">História da Igreja</option>
-                                <option value="Doutrina Social">Doutrina Social</option>
-                                <option value="Filosofia">Filosofia</option>
-                                <option value="Outros">Outros</option>
-                              </select>
+                              <div className="flex gap-2">
+                                <select
+                                  name="categoria"
+                                  value={formData.categoria}
+                                  onChange={handleChange}
+                                  className="flex-1 px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                >
+                                  <option value="">Selecione uma categoria</option>
+                                  {categorias.map(cat => (
+                                    <option key={cat} value={cat}>{cat}</option>
+                                  ))}
+                                </select>
+                                <button
+                                  type="button"
+                                  onClick={() => setShowCategoryModal(true)}
+                                  className="p-2 text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors border border-gray-300"
+                                  title="Gerenciar categorias"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                                  </svg>
+                                </button>
+                              </div>
                             </div>
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -726,7 +762,26 @@ function ListarLivros() {
                                 name="indice"
                                 value={formData.indice}
                                 onChange={handleChange}
-                                rows="5"
+                                rows="15"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                              />
+                            </div>
+
+                            {/* Tags Pessoais */}
+                            <div className="md:col-span-2">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Tags Pessoais <span className="text-gray-400 text-xs font-normal">(opcional)</span>
+                              </label>
+                              <p className="text-xs text-gray-500 mb-2">
+                                Tags são palavras-chave personalizadas para ajudar você a organizar e encontrar seus livros.
+                                Elas são privadas e servem apenas para facilitar buscas. Separe por vírgula (ex: favorito, ler novamente, emprestado).
+                              </p>
+                              <input
+                                type="text"
+                                name="tags"
+                                value={formData.tags}
+                                onChange={handleChange}
+                                placeholder="ex: favorito, para estudar, emprestado"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                               />
                             </div>
@@ -804,7 +859,7 @@ function ListarLivros() {
                             </button>
                             <button
                               onClick={() => handleEdit(livro)}
-                              className="p-2 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 rounded-lg transition-colors"
+                              className="p-2 text-amber-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
                               title="Editar"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -831,6 +886,88 @@ function ListarLivros() {
             </div>
           )}
         </div>
+
+        {/* Modal de Gerenciamento de Categorias */}
+        {showCategoryModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+              {/* Header */}
+              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-gray-900">Gerenciar Categorias</h2>
+                <button
+                  onClick={() => setShowCategoryModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-6">
+                {/* Adicionar nova categoria */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Adicionar Nova Categoria
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={novaCategoria}
+                      onChange={(e) => setNovaCategoria(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddCategoria()}
+                      placeholder="Nome da categoria"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    />
+                    <button
+                      onClick={handleAddCategoria}
+                      className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors"
+                    >
+                      Adicionar
+                    </button>
+                  </div>
+                </div>
+
+                {/* Lista de categorias */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Categorias Existentes ({categorias.length})
+                  </label>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {categorias.map((categoria) => (
+                      <div
+                        key={categoria}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      >
+                        <span className="text-sm text-gray-900">{categoria}</span>
+                        <button
+                          onClick={() => handleRemoveCategoria(categoria)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1.5 rounded transition-colors"
+                          title="Remover categoria"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-end">
+                <button
+                  onClick={() => setShowCategoryModal(false)}
+                  className="px-6 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
