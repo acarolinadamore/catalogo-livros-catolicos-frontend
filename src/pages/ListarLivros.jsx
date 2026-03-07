@@ -149,7 +149,13 @@ function ListarLivros() {
   };
 
   const handleEdit = (livro) => {
+    console.log('Editando livro:', livro);
+    console.log('Cover URL:', livro.cover_url);
+
     setEditingBook(livro.id);
+
+    const capaUrl = livro.cover_url || '';
+
     setFormData({
       titulo: livro.title || '',
       autor: livro.author || '',
@@ -158,10 +164,11 @@ function ListarLivros() {
       categoria: livro.category || '',
       descricao: livro.description || '',
       isbn: livro.isbn || '',
-      capa_url: livro.cover_url || '',
+      capa_url: capaUrl,
       indice: livro.index_text || '',
       tags: livro.tags || ''
     });
+
     // Converter tags string para array
     if (livro.tags) {
       const tagsArray = livro.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
@@ -169,10 +176,19 @@ function ListarLivros() {
     } else {
       setTagsList([]);
     }
+
     setTagInput('');
     setSelectedFile(null);
-    setUploadMethod(livro.cover_url ? 'url' : 'file');
+
+    // Se tem capa, sempre mostrar no modo URL
+    setUploadMethod(capaUrl ? 'url' : 'file');
+
     setMessage({ type: '', text: '' });
+
+    console.log('FormData após edição:', {
+      ...formData,
+      capa_url: capaUrl
+    });
   };
 
   const handleCancelEdit = () => {
@@ -714,36 +730,56 @@ function ListarLivros() {
                                 Capa do Livro <span className="text-gray-400 text-xs font-normal">(opcional)</span>
                               </label>
 
+                              {/* Debug info */}
+                              {console.log('Renderizando capa - formData.capa_url:', formData.capa_url)}
+
                               {/* Mostrar imagem atual se existir */}
-                              {formData.capa_url && (
+                              {formData.capa_url && formData.capa_url.trim() !== '' && (
                                 <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                  <p className="text-sm font-medium text-gray-700 mb-2">Imagem atual:</p>
+                                  <p className="text-sm font-medium text-gray-700 mb-2">
+                                    ✅ Imagem atual cadastrada
+                                  </p>
                                   <div className="flex items-start gap-4">
-                                    <img
-                                      src={formData.capa_url}
-                                      alt="Capa atual"
-                                      className="h-32 w-24 object-cover rounded border border-gray-300"
-                                      onError={(e) => {
-                                        e.target.style.display = 'none';
-                                      }}
-                                    />
+                                    <div className="relative">
+                                      <img
+                                        src={formData.capa_url}
+                                        alt="Capa atual"
+                                        className="h-32 w-24 object-cover rounded border border-gray-300 shadow-sm"
+                                        onError={(e) => {
+                                          console.error('Erro ao carregar imagem:', formData.capa_url);
+                                          e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="96" height="128" viewBox="0 0 96 128"%3E%3Crect fill="%23f3f4f6" width="96" height="128"/%3E%3Ctext x="50%25" y="50%25" fill="%239ca3af" font-size="12" text-anchor="middle" dy=".3em"%3ESem imagem%3C/text%3E%3C/svg%3E';
+                                        }}
+                                      />
+                                    </div>
                                     <div className="flex-1">
                                       <a
                                         href={formData.capa_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 mb-2"
+                                        className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 mb-2 underline"
                                       >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                         </svg>
                                         Ver imagem em tamanho real
                                       </a>
+                                      <p className="text-xs text-gray-500 break-all mb-2">
+                                        URL: {formData.capa_url.substring(0, 60)}{formData.capa_url.length > 60 ? '...' : ''}
+                                      </p>
                                       <p className="text-xs text-gray-500">
                                         Para alterar a imagem, selecione uma nova abaixo
                                       </p>
                                     </div>
                                   </div>
+                                </div>
+                              )}
+
+                              {/* Se não tem capa */}
+                              {(!formData.capa_url || formData.capa_url.trim() === '') && (
+                                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                  <p className="text-sm text-yellow-800">
+                                    ⚠️ Este livro não possui capa cadastrada
+                                  </p>
                                 </div>
                               )}
 
