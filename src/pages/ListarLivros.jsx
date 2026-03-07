@@ -27,6 +27,8 @@ function ListarLivros() {
   });
   const [uploadMethod, setUploadMethod] = useState('file');
   const [selectedFile, setSelectedFile] = useState(null);
+  const [tagsList, setTagsList] = useState([]);
+  const [tagInput, setTagInput] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [filtros, setFiltros] = useState({
@@ -53,6 +55,8 @@ function ListarLivros() {
     'Outros'
   ]);
   const [novaCategoria, setNovaCategoria] = useState('');
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [editingCategoryValue, setEditingCategoryValue] = useState('');
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -158,8 +162,16 @@ function ListarLivros() {
       indice: livro.index_text || '',
       tags: livro.tags || ''
     });
+    // Converter tags string para array
+    if (livro.tags) {
+      const tagsArray = livro.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+      setTagsList(tagsArray);
+    } else {
+      setTagsList([]);
+    }
+    setTagInput('');
     setSelectedFile(null);
-    setUploadMethod('file');
+    setUploadMethod(livro.cover_url ? 'url' : 'file');
     setMessage({ type: '', text: '' });
   };
 
@@ -177,6 +189,8 @@ function ListarLivros() {
       indice: '',
       tags: ''
     });
+    setTagsList([]);
+    setTagInput('');
     setSelectedFile(null);
     setUploadMethod('file');
     setMessage({ type: '', text: '' });
@@ -332,6 +346,56 @@ function ListarLivros() {
   const handleRemoveCategoria = (categoria) => {
     if (confirm(`Deseja realmente remover a categoria "${categoria}"?`)) {
       setCategorias(categorias.filter(cat => cat !== categoria));
+    }
+  };
+
+  const handleStartEditCategoria = (categoria) => {
+    setEditingCategory(categoria);
+    setEditingCategoryValue(categoria);
+  };
+
+  const handleSaveEditCategoria = () => {
+    if (editingCategoryValue.trim() && editingCategoryValue !== editingCategory) {
+      const updatedCategorias = categorias.map(cat =>
+        cat === editingCategory ? editingCategoryValue.trim() : cat
+      ).sort();
+      setCategorias(updatedCategorias);
+    }
+    setEditingCategory(null);
+    setEditingCategoryValue('');
+  };
+
+  const handleCancelEditCategoria = () => {
+    setEditingCategory(null);
+    setEditingCategoryValue('');
+  };
+
+  const handleAddTag = () => {
+    const trimmedTag = tagInput.trim();
+    if (trimmedTag && !tagsList.includes(trimmedTag)) {
+      const newTagsList = [...tagsList, trimmedTag];
+      setTagsList(newTagsList);
+      setFormData(prev => ({
+        ...prev,
+        tags: newTagsList.join(', ')
+      }));
+      setTagInput('');
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    const newTagsList = tagsList.filter(tag => tag !== tagToRemove);
+    setTagsList(newTagsList);
+    setFormData(prev => ({
+      ...prev,
+      tags: newTagsList.join(', ')
+    }));
+  };
+
+  const handleTagInputKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddTag();
     }
   };
 
@@ -611,7 +675,8 @@ function ListarLivros() {
                                   name="categoria"
                                   value={formData.categoria}
                                   onChange={handleChange}
-                                  className="flex-1 px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                  className="flex-1 px-3 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                                  style={{ backgroundPosition: 'right 0.75rem center' }}
                                 >
                                   <option value="">Selecione uma categoria</option>
                                   {categorias.map(cat => (
@@ -774,16 +839,50 @@ function ListarLivros() {
                               </label>
                               <p className="text-xs text-gray-500 mb-2">
                                 Tags são palavras-chave personalizadas para ajudar você a organizar e encontrar seus livros.
-                                Elas são privadas e servem apenas para facilitar buscas. Separe por vírgula (ex: favorito, ler novamente, emprestado).
+                                Elas são privadas e servem apenas para facilitar buscas.
                               </p>
-                              <input
-                                type="text"
-                                name="tags"
-                                value={formData.tags}
-                                onChange={handleChange}
-                                placeholder="ex: favorito, para estudar, emprestado"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                              />
+
+                              {/* Chips das tags existentes */}
+                              {tagsList.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-3">
+                                  {tagsList.map((tag, index) => (
+                                    <span
+                                      key={index}
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-medium"
+                                    >
+                                      {tag}
+                                      <button
+                                        type="button"
+                                        onClick={() => handleRemoveTag(tag)}
+                                        className="hover:text-primary-900 transition-colors"
+                                      >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                        </svg>
+                                      </button>
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* Input para adicionar nova tag */}
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={tagInput}
+                                  onChange={(e) => setTagInput(e.target.value)}
+                                  onKeyPress={handleTagInputKeyPress}
+                                  placeholder="Digite uma tag e pressione Enter"
+                                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={handleAddTag}
+                                  className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors"
+                                >
+                                  Adicionar
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </form>
@@ -938,18 +1037,62 @@ function ListarLivros() {
                     {categorias.map((categoria) => (
                       <div
                         key={categoria}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                       >
-                        <span className="text-sm text-gray-900">{categoria}</span>
-                        <button
-                          onClick={() => handleRemoveCategoria(categoria)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1.5 rounded transition-colors"
-                          title="Remover categoria"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                          </svg>
-                        </button>
+                        {editingCategory === categoria ? (
+                          // Modo de edição
+                          <>
+                            <input
+                              type="text"
+                              value={editingCategoryValue}
+                              onChange={(e) => setEditingCategoryValue(e.target.value)}
+                              onKeyPress={(e) => e.key === 'Enter' && handleSaveEditCategoria()}
+                              className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                              autoFocus
+                            />
+                            <button
+                              onClick={handleSaveEditCategoria}
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50 p-1.5 rounded transition-colors"
+                              title="Salvar"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={handleCancelEditCategoria}
+                              className="text-gray-600 hover:text-gray-700 hover:bg-gray-200 p-1.5 rounded transition-colors"
+                              title="Cancelar"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                            </button>
+                          </>
+                        ) : (
+                          // Modo de visualização
+                          <>
+                            <span className="flex-1 text-sm text-gray-900">{categoria}</span>
+                            <button
+                              onClick={() => handleStartEditCategoria(categoria)}
+                              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1.5 rounded transition-colors"
+                              title="Editar categoria"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => handleRemoveCategoria(categoria)}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1.5 rounded transition-colors"
+                              title="Remover categoria"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            </button>
+                          </>
+                        )}
                       </div>
                     ))}
                   </div>
