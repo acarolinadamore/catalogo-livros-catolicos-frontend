@@ -36,6 +36,7 @@ function ListarLivros() {
     ano: '',
     indice: ''
   });
+  const [searchQuery, setSearchQuery] = useState('');
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -46,6 +47,18 @@ function ListarLivros() {
   useEffect(() => {
     // Aplicar filtros
     let resultado = livros;
+
+    // Filtro de busca geral
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      resultado = resultado.filter(livro =>
+        livro.title.toLowerCase().includes(query) ||
+        livro.author.toLowerCase().includes(query) ||
+        (livro.publisher && livro.publisher.toLowerCase().includes(query)) ||
+        (livro.category && livro.category.toLowerCase().includes(query)) ||
+        (livro.index_text && livro.index_text.toLowerCase().includes(query))
+      );
+    }
 
     if (filtros.titulo) {
       resultado = resultado.filter(livro =>
@@ -84,7 +97,7 @@ function ListarLivros() {
     }
 
     setLivrosFiltrados(resultado);
-  }, [filtros, livros]);
+  }, [filtros, livros, searchQuery]);
 
   const carregarLivros = async () => {
     try {
@@ -312,24 +325,68 @@ function ListarLivros() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Cabeçalho com botão Cadastrar */}
-      <div className="mb-4 flex justify-between items-center">
-        <h1 className="text-3xl font-serif font-bold text-gray-900">
-          Listar Livros
-        </h1>
-        <button
-          onClick={() => navigate('/cadastrar')}
-          className="px-6 py-3 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200 shadow-sm"
-        >
-          Cadastrar Livro
-        </button>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <style>{`
+        /* Scroll customizado mais discreto */
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+      `}</style>
 
-      {/* Contador de livros */}
-      <p className="text-xs text-gray-500 mb-3">
-        Total de {livrosFiltrados.length} livro{livrosFiltrados.length !== 1 ? 's' : ''} {filtros.titulo || filtros.autor || filtros.editora || filtros.categoria || filtros.ano || filtros.indice ? 'encontrado' : 'cadastrado'}{livrosFiltrados.length !== 1 ? 's' : ''}
-      </p>
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        {/* Cabeçalho com botão Cadastrar */}
+        <div className="mb-6 flex justify-between items-center">
+          <h1 className="text-3xl font-serif font-bold text-gray-900">
+            Gerenciar Livros
+          </h1>
+          <button
+            onClick={() => navigate('/cadastrar')}
+            className="px-6 py-3 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200 shadow-sm"
+          >
+            Cadastrar Livro
+          </button>
+        </div>
+
+        {/* Campo de busca grande */}
+        <div className="mb-6">
+          <div className="relative max-w-3xl">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Busque por título, autor, editora, categoria ou palavra-chave"
+              className="w-full px-6 py-4 pr-14 text-lg rounded-xl border border-gray-300
+                       focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200
+                       transition-all duration-200 shadow-sm"
+            />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Contador de livros */}
+        <p className="text-sm text-gray-600 mb-4">
+          {searchQuery || filtros.titulo || filtros.autor || filtros.editora || filtros.categoria || filtros.ano || filtros.indice ? (
+            <>Exibindo {livrosFiltrados.length} de {livros.length} livro{livros.length !== 1 ? 's' : ''}</>
+          ) : (
+            <>Total de {livrosFiltrados.length} livro{livrosFiltrados.length !== 1 ? 's' : ''} cadastrado{livrosFiltrados.length !== 1 ? 's' : ''}</>
+          )}
+        </p>
 
       {/* Mensagem de feedback */}
       {message.text && (
@@ -344,15 +401,15 @@ function ListarLivros() {
         </div>
       )}
 
-      {/* Lista de Livros */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        {livros.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
-            <p>Nenhum livro cadastrado ainda.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto max-h-[calc(100vh-300px)] overflow-y-auto">
-            <table className="min-w-full divide-y divide-gray-200 relative">
+        {/* Lista de Livros */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          {livros.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              <p>Nenhum livro cadastrado ainda.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">
+              <table className="w-full divide-y divide-gray-200 relative">
               <thead className="bg-gray-50 sticky top-0 z-10">
                 <tr>
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
@@ -556,6 +613,39 @@ function ListarLivros() {
                                 Capa do Livro <span className="text-gray-400 text-xs font-normal">(opcional)</span>
                               </label>
 
+                              {/* Mostrar imagem atual se existir */}
+                              {formData.capa_url && (
+                                <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                  <p className="text-sm font-medium text-gray-700 mb-2">Imagem atual:</p>
+                                  <div className="flex items-start gap-4">
+                                    <img
+                                      src={formData.capa_url}
+                                      alt="Capa atual"
+                                      className="h-32 w-24 object-cover rounded border border-gray-300"
+                                      onError={(e) => {
+                                        e.target.style.display = 'none';
+                                      }}
+                                    />
+                                    <div className="flex-1">
+                                      <a
+                                        href={formData.capa_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 mb-2"
+                                      >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        </svg>
+                                        Ver imagem em tamanho real
+                                      </a>
+                                      <p className="text-xs text-gray-500">
+                                        Para alterar a imagem, selecione uma nova abaixo
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
                               {/* Opções de método */}
                               <div className="flex gap-4 mb-4">
                                 <label className="flex items-center cursor-pointer">
@@ -589,6 +679,7 @@ function ListarLivros() {
                                   name="capa_url"
                                   value={formData.capa_url}
                                   onChange={handleChange}
+                                  placeholder="https://exemplo.com/imagem.jpg"
                                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                 />
                               )}
@@ -700,10 +791,10 @@ function ListarLivros() {
                             </button>
                           </div>
                         ) : (
-                          <div className="flex gap-3 justify-end items-center">
+                          <div className="flex gap-2 justify-end items-center">
                             <button
                               onClick={() => handleView(livro.id)}
-                              className="text-primary-600 hover:text-primary-900 transition-colors"
+                              className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
                               title="Visualizar"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -713,7 +804,7 @@ function ListarLivros() {
                             </button>
                             <button
                               onClick={() => handleEdit(livro)}
-                              className="text-blue-600 hover:text-blue-900 transition-colors"
+                              className="p-2 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 rounded-lg transition-colors"
                               title="Editar"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -722,7 +813,7 @@ function ListarLivros() {
                             </button>
                             <button
                               onClick={() => setShowDeleteConfirm(livro.id)}
-                              className="text-red-600 hover:text-red-900 transition-colors"
+                              className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                               title="Excluir"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -736,9 +827,10 @@ function ListarLivros() {
                   )
                 ))}
               </tbody>
-            </table>
-          </div>
-        )}
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
