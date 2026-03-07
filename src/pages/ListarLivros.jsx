@@ -27,6 +27,7 @@ function ListarLivros() {
   });
   const [uploadMethod, setUploadMethod] = useState('file');
   const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [tagsList, setTagsList] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
@@ -179,6 +180,7 @@ function ListarLivros() {
 
     setTagInput('');
     setSelectedFile(null);
+    setPreviewUrl(null);
 
     // Se tem capa, sempre mostrar no modo URL
     setUploadMethod(capaUrl ? 'url' : 'file');
@@ -208,6 +210,7 @@ function ListarLivros() {
     setTagsList([]);
     setTagInput('');
     setSelectedFile(null);
+    setPreviewUrl(null);
     setUploadMethod('file');
     setMessage({ type: '', text: '' });
   };
@@ -241,6 +244,14 @@ function ListarLivros() {
       }
 
       setSelectedFile(file);
+
+      // Criar preview da imagem
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+
       setMessage({ type: '', text: '' });
     }
   };
@@ -834,9 +845,30 @@ function ListarLivros() {
                                     JPG ou PNG. Máximo 5MB
                                   </p>
                                   {selectedFile && (
-                                    <p className="mt-2 text-sm text-green-600">
-                                      ✓ Arquivo selecionado: {selectedFile.name}
-                                    </p>
+                                    <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                      <p className="text-sm font-medium text-green-800 mb-3">
+                                        ✓ Arquivo selecionado: {selectedFile.name}
+                                      </p>
+                                      {previewUrl && (
+                                        <div className="flex items-start gap-4">
+                                          <div className="relative">
+                                            <img
+                                              src={previewUrl}
+                                              alt="Preview da nova capa"
+                                              className="h-32 w-24 object-cover rounded border border-green-300 shadow-sm"
+                                            />
+                                          </div>
+                                          <div className="flex-1">
+                                            <p className="text-sm text-green-700 font-medium mb-1">
+                                              Preview da nova imagem
+                                            </p>
+                                            <p className="text-xs text-green-600">
+                                              Esta imagem será enviada ao salvar as alterações
+                                            </p>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
                                   )}
                                 </div>
                               )}
