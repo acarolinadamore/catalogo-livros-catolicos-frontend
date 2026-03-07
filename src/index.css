@@ -1,0 +1,86 @@
+/* Imports do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap');
+
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilos base customizados */
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+
+  /* Estilo de foco acessível */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary-600;
+  }
+}
+
+/* Componentes customizados */
+@layer components {
+  /* Card de livro */
+  .book-card {
+    @apply bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
+    @apply border border-gray-200;
+  }
+
+  /* Botão primário */
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white;
+    @apply px-6 py-2.5 rounded-lg font-medium;
+    @apply transition-colors duration-200;
+    @apply focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  /* Botão secundário */
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-gray-700 border border-gray-300;
+    @apply px-6 py-2.5 rounded-lg font-medium;
+    @apply transition-colors duration-200;
+    @apply focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+  }
+
+  /* Input de busca */
+  .search-input {
+    @apply w-full px-4 py-3 rounded-lg border-2 border-gray-300;
+    @apply focus:border-primary-500 focus:ring-2 focus:ring-primary-200;
+    @apply transition-all duration-200;
+    @apply placeholder-gray-400;
+  }
+
+  /* Badge de categoria */
+  .category-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-primary-100 text-primary-800;
+  }
+}
+
+/* Utilidades customizadas */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Animações suaves */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
