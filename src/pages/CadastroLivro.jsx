@@ -327,7 +327,7 @@ function CadastroLivro() {
       {/* Formulário */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-lg shadow-sm border border-gray-200 p-8"
+        className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 md:p-8"
       >
         <div className="space-y-6">
           {/* Título */}
@@ -369,8 +369,8 @@ function CadastroLivro() {
           </div>
 
           {/* Editora e Ano - Grid 2 colunas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="min-w-0">
               <label
                 htmlFor="editora"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -390,7 +390,7 @@ function CadastroLivro() {
               />
             </div>
 
-            <div>
+            <div className="min-w-0">
               <label
                 htmlFor="ano"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -414,9 +414,9 @@ function CadastroLivro() {
           </div>
 
           {/* Categoria e ISBN - Grid 2 colunas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <div className="flex items-center justify-between mb-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="min-w-0">
+              <div className="flex items-center justify-between mb-2 gap-2">
                 <label
                   htmlFor="categoria"
                   className="block text-sm font-medium text-gray-700"
@@ -429,11 +429,12 @@ function CadastroLivro() {
                 <button
                   type="button"
                   onClick={() => setShowCategoryModal(true)}
-                  className="text-primary-600 hover:text-primary-700 flex items-center gap-1 text-sm font-medium transition-colors"
+                  className="text-primary-600 hover:text-primary-700 flex items-center gap-1 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
                   title="Gerenciar categorias"
                 >
-                  <Settings className="h-4 w-4" />
-                  Gerenciar
+                  <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden xs:inline">Gerenciar</span>
+                  <span className="xs:hidden">Editar</span>
                 </button>
               </div>
               <select
@@ -441,7 +442,7 @@ function CadastroLivro() {
                 name="categoria"
                 value={formData.categoria}
                 onChange={handleChange}
-                className="w-full px-4 py-3 pr-10 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
+                className="w-full px-3 py-2.5 sm:px-4 sm:py-3 pr-8 sm:pr-10 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 text-sm sm:text-base"
               >
                 <option value="">Selecione uma categoria</option>
                 {categorias.map(cat => (
@@ -450,7 +451,7 @@ function CadastroLivro() {
               </select>
             </div>
 
-            <div>
+            <div className="min-w-0">
               <label
                 htmlFor="isbn"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -643,7 +644,7 @@ function CadastroLivro() {
             )}
 
             {/* Input para adicionar nova tag */}
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 value={tagInput}
@@ -655,7 +656,7 @@ function CadastroLivro() {
               <button
                 type="button"
                 onClick={handleAddTag}
-                className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-1"
+                className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-1 w-full sm:w-auto"
               >
                 <Plus className="h-4 w-4" />
                 Adicionar
@@ -680,7 +681,7 @@ function CadastroLivro() {
         )}
 
         {/* Botões de ação */}
-        <div className="mt-8 flex gap-4 justify-end">
+        <div className="mt-8 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 sm:justify-end">
           <button
             type="button"
             onClick={() => {
@@ -703,14 +704,14 @@ function CadastroLivro() {
               setTagsList([])
               setTagInput("")
             }}
-            className="btn-secondary"
+            className="btn-secondary w-full sm:w-auto"
             disabled={isSubmitting}
           >
             Limpar
           </button>
           <button
             type="submit"
-            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Cadastrando..." : "Cadastrar Livro"}

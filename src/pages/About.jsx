@@ -33,10 +33,10 @@ function About() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Cabeçalho */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-serif font-bold text-gray-900 mb-4">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">
           Sobre a Biblioteca Católica
         </h1>
-        <p className="text-lg text-gray-600">
+        <p className="text-base sm:text-lg text-gray-600">
           Plataforma de catalogação e consulta de livros religiosos católicos
         </p>
       </div>
@@ -54,7 +54,7 @@ function About() {
       <div className="prose prose-lg max-w-none">
         {/* O que é */}
         <section className="mb-10">
-          <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+          <h2 className="text-xl sm:text-2xl font-serif font-bold text-gray-900 mb-4">
             O que é a Biblioteca Católica
           </h2>
           <p className="text-gray-700 leading-relaxed mb-4">
@@ -79,7 +79,7 @@ function About() {
 
         {/* Pe. Carlos */}
         <section className="mb-10">
-          <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6 text-center">
+          <h2 className="text-xl sm:text-2xl font-serif font-bold text-gray-900 mb-6 text-center">
             Pe. Carlos Alberto Pereira
           </h2>
 
@@ -88,7 +88,7 @@ function About() {
             <img
               src="/PadreCarlos.jpg"
               alt="Pe. Carlos Alberto Pereira"
-              className="rounded-lg shadow-lg w-full max-w-4xl"
+              className="rounded-lg shadow-lg w-full max-w-full sm:max-w-4xl"
             />
           </div>
 
@@ -127,49 +127,51 @@ function About() {
           </p>
 
           {/* Compartilhar */}
-          <div className="flex items-center gap-3 mt-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-4">
             <span className="text-sm text-gray-600 font-medium">
               Contato:
             </span>
-            <a
-              href="https://api.whatsapp.com/send?text=*PE.%20CARLOS%20ALBERTO%20PEREIRA%20%7C%20Arquidiocese%20de%20Campo%20Grande*%0A%0Ahttps://arquidiocesedecampogrande.org.br/carlos-alberto-pereira/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-green-600 hover:text-green-700 transition-colors"
-              title="Compartilhar no WhatsApp"
-            >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-              </svg>
-            </a>
-            <a
-              href="https://www.facebook.com/sharer.php?u=https://arquidiocesedecampogrande.org.br/carlos-alberto-pereira/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-700 transition-colors"
-              title="Compartilhar no Facebook"
-            >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-              </svg>
-            </a>
-            <a
-              href="https://x.com/intent/tweet?text=%20https://arquidiocesedecampogrande.org.br/carlos-alberto-pereira/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-900 hover:text-gray-700 transition-colors"
-              title="Compartilhar no X (Twitter)"
-            >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
+            <div className="flex items-center gap-3 flex-wrap">
+              <a
+                href="https://api.whatsapp.com/send?text=*PE.%20CARLOS%20ALBERTO%20PEREIRA%20%7C%20Arquidiocese%20de%20Campo%20Grande*%0A%0Ahttps://arquidiocesedecampogrande.org.br/carlos-alberto-pereira/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green-600 hover:text-green-700 transition-colors"
+                title="Compartilhar no WhatsApp"
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                </svg>
+              </a>
+              <a
+                href="https://www.facebook.com/sharer.php?u=https://arquidiocesedecampogrande.org.br/carlos-alberto-pereira/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 transition-colors"
+                title="Compartilhar no Facebook"
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              </a>
+              <a
+                href="https://x.com/intent/tweet?text=%20https://arquidiocesedecampogrande.org.br/carlos-alberto-pereira/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-900 hover:text-gray-700 transition-colors"
+                title="Compartilhar no X (Twitter)"
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              </a>
+            </div>
           </div>
         </section>
 
         {/* Objetivo Pastoral */}
         <section className="mb-10">
-          <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+          <h2 className="text-xl sm:text-2xl font-serif font-bold text-gray-900 mb-4">
             Objetivo Pastoral
           </h2>
           <p className="text-gray-700 leading-relaxed mb-4">
@@ -195,20 +197,20 @@ function About() {
 
         {/* Colaboração e Iniciativa */}
         <section className="mb-10">
-          <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6">
+          <h2 className="text-xl sm:text-2xl font-serif font-bold text-gray-900 mb-6">
             Colaboração e Iniciativa
           </h2>
 
-          <div className="flex gap-6 mb-4 items-center">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-4 sm:items-center">
             {/* Foto do Antonio Tito */}
             <img
               src="/tito.png"
               alt="Antonio Tito"
-              className="w-48 h-48 rounded-lg shadow-lg object-cover flex-shrink-0"
+              className="w-32 h-32 sm:w-48 sm:h-48 rounded-lg shadow-lg object-cover flex-shrink-0 mx-auto sm:mx-0"
               style={{ backgroundColor: '#CCCBC6' }}
             />
 
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <p className="text-gray-700 leading-relaxed mb-4">
                 Este projeto nasceu a partir da iniciativa de{" "}
                 <strong>Antonio Tito</strong>, que se dispôs a auxiliar o Pe. Carlos
@@ -220,76 +222,78 @@ function About() {
                 ao próximo, colocando tempo e disposição a serviço da missão pastoral.
               </p>
 
-              <div className="flex items-center gap-3 mt-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-4">
                 <span className="text-sm text-gray-600 font-medium">Contato:</span>
-                <a
-                  href="https://wa.me/5567996633107"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-green-600 hover:text-green-700 transition-colors"
-                  title="WhatsApp"
-                >
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                  </svg>
-                </a>
-                <a
-                  href="https://www.facebook.com/titotalksmedia"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-700 transition-colors"
-                  title="Facebook - Tito Media"
-                >
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                </a>
-                <a
-                  href="https://www.youtube.com/@titomedianet"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-red-600 hover:text-red-700 transition-colors"
-                  title="YouTube - @titomedianet"
-                >
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                  </svg>
-                </a>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-3 flex-wrap">
                   <a
-                    href="https://www.instagram.com/titofps/"
+                    href="https://wa.me/5567996633107"
                     target="_blank"
                     rel="noopener noreferrer"
-                    title="Instagram - @titofps"
+                    className="text-green-600 hover:text-green-700 transition-colors"
+                    title="WhatsApp"
                   >
-                    <InstagramIcon className="w-6 h-6" />
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                    </svg>
                   </a>
                   <a
-                    href="https://www.instagram.com/titofps/"
+                    href="https://www.facebook.com/titotalksmedia"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-base font-medium text-blue-600 hover:text-blue-700"
+                    className="text-blue-600 hover:text-blue-700 transition-colors"
+                    title="Facebook - Tito Media"
                   >
-                    titofps
-                  </a>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <a
-                    href="https://www.instagram.com/titotalksmedia/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title="Instagram - @titotalksmedia"
-                  >
-                    <InstagramIcon className="w-6 h-6" />
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
                   </a>
                   <a
-                    href="https://www.instagram.com/titotalksmedia/"
+                    href="https://www.youtube.com/@titomedianet"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-base font-medium text-blue-600 hover:text-blue-700"
+                    className="text-red-600 hover:text-red-700 transition-colors"
+                    title="YouTube - @titomedianet"
                   >
-                    titotalksmedia
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                    </svg>
                   </a>
+                  <div className="flex items-center gap-1.5">
+                    <a
+                      href="https://www.instagram.com/titofps/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Instagram - @titofps"
+                    >
+                      <InstagramIcon className="w-6 h-6" />
+                    </a>
+                    <a
+                      href="https://www.instagram.com/titofps/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm sm:text-base font-medium text-blue-600 hover:text-blue-700 whitespace-nowrap"
+                    >
+                      titofps
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <a
+                      href="https://www.instagram.com/titotalksmedia/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Instagram - @titotalksmedia"
+                    >
+                      <InstagramIcon className="w-6 h-6" />
+                    </a>
+                    <a
+                      href="https://www.instagram.com/titotalksmedia/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm sm:text-base font-medium text-blue-600 hover:text-blue-700 whitespace-nowrap"
+                    >
+                      titotalksmedia
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -298,20 +302,20 @@ function About() {
 
         {/* Desenvolvimento do Sistema */}
         <section className="mb-10">
-          <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6">
+          <h2 className="text-xl sm:text-2xl font-serif font-bold text-gray-900 mb-6">
             Desenvolvimento do Sistema
           </h2>
 
-          <div className="flex gap-6 mb-4 items-center">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-4 sm:items-center">
             {/* Foto da Ana Carolina */}
             <img
               src="/ana-carolina.png"
               alt="Ana Carolina Damore"
-              className="w-48 h-48 rounded-lg shadow-lg object-cover flex-shrink-0"
+              className="w-32 h-32 sm:w-48 sm:h-48 rounded-lg shadow-lg object-cover flex-shrink-0 mx-auto sm:mx-0"
               style={{ backgroundColor: '#CCCBC6' }}
             />
 
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <p className="text-gray-700 leading-relaxed mb-4">
                 Este sistema foi idealizado e desenvolvido por{" "}
                 <strong>Ana Carolina Damore</strong>, com foco em uma solução
@@ -327,50 +331,52 @@ function About() {
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-6">
-            <div className="flex items-center gap-3 mb-3">
+          <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
               <span className="text-sm text-gray-600 font-medium">Contato:</span>
-              <a
-                href="https://wa.me/5567992429385"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-green-600 hover:text-green-700 transition-colors"
-                title="WhatsApp"
-              >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                </svg>
-              </a>
-              <a
-                href="https://www.facebook.com/acarolinadamore"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-700 transition-colors"
-                title="Facebook - Ana Carolina Damore"
-              >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
-              </a>
-              <a
-                href="https://www.instagram.com/acarolinadamore/"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Instagram - @acarolinadamore"
-              >
-                <InstagramIcon className="w-6 h-6" />
-              </a>
+              <div className="flex items-center gap-3 flex-wrap">
+                <a
+                  href="https://wa.me/5567992429385"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-600 hover:text-green-700 transition-colors"
+                  title="WhatsApp"
+                >
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                  </svg>
+                </a>
+                <a
+                  href="https://www.facebook.com/acarolinadamore"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-700 transition-colors"
+                  title="Facebook - Ana Carolina Damore"
+                >
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
+                </a>
+                <a
+                  href="https://www.instagram.com/acarolinadamore/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Instagram - @acarolinadamore"
+                >
+                  <InstagramIcon className="w-6 h-6" />
+                </a>
+              </div>
             </div>
-            <div className="space-y-2 text-gray-700">
-              <p className="flex items-center">
-                <span className="mr-2">🌐</span>
-                <span>
+            <div className="space-y-2 text-gray-700 text-sm sm:text-base">
+              <p className="flex items-start">
+                <span className="mr-2 flex-shrink-0">🌐</span>
+                <span className="break-words">
                   Sites:{" "}
                   <a
                     href="https://admtecnologia.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-700 underline"
+                    className="text-blue-600 hover:text-blue-700 underline break-all"
                   >
                     admtecnologia.vercel.app
                   </a>
@@ -379,19 +385,19 @@ function About() {
                     href="https://anadamore.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-700 underline"
+                    className="text-blue-600 hover:text-blue-700 underline break-all"
                   >
                     anadamore.vercel.app
                   </a>
                 </span>
               </p>
-              <p className="flex items-center">
-                <span className="mr-2">✉️</span>
-                <span>
+              <p className="flex items-start">
+                <span className="mr-2 flex-shrink-0">✉️</span>
+                <span className="break-words">
                   E-mail:{" "}
                   <a
                     href="mailto:acarolinadamore@gmail.com"
-                    className="text-blue-600 hover:text-blue-700 underline"
+                    className="text-blue-600 hover:text-blue-700 underline break-all"
                   >
                     acarolinadamore@gmail.com
                   </a>
@@ -403,7 +409,7 @@ function About() {
 
         {/* Direitos Autorais */}
         <section className="mb-10">
-          <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+          <h2 className="text-xl sm:text-2xl font-serif font-bold text-gray-900 mb-4">
             Nota sobre Direitos Autorais
           </h2>
           <p className="text-gray-700 leading-relaxed">
