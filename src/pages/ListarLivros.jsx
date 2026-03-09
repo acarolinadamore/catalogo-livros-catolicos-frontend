@@ -703,19 +703,46 @@ function ListarLivros() {
                           }}
                           onFocus={() => setShowTagsDropdown(true)}
                           placeholder="Buscar tag..."
-                          className="w-full px-2 py-1.5 pr-8 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          className="w-full px-2 py-1.5 pr-16 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                         />
-                        <button
-                          type="button"
-                          onClick={() => setShowTagsDropdown(!showTagsDropdown)}
-                          className="absolute right-1 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded"
-                        >
-                          <ChevronDown className="h-4 w-4 text-gray-400" />
-                        </button>
+                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+                          {filtros.tags && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setFiltros(prev => ({ ...prev, tags: '' }));
+                                setShowTagsDropdown(false);
+                              }}
+                              className="p-1 hover:bg-gray-200 rounded transition-colors"
+                              title="Limpar filtro"
+                            >
+                              <X className="h-4 w-4 text-gray-500" />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => setShowTagsDropdown(!showTagsDropdown)}
+                            className="p-1 hover:bg-gray-100 rounded"
+                          >
+                            <ChevronDown className="h-4 w-4 text-gray-400" />
+                          </button>
+                        </div>
                       </div>
 
                       {showTagsDropdown && todasTags.length > 0 && (
                         <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto custom-scrollbar">
+                          {filtros.tags && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setFiltros(prev => ({ ...prev, tags: '' }));
+                                setShowTagsDropdown(false);
+                              }}
+                              className="w-full px-3 py-2 text-left text-sm bg-gray-50 hover:bg-gray-100 font-medium text-gray-700 border-b border-gray-200"
+                            >
+                              ✕ Limpar filtro
+                            </button>
+                          )}
                           {todasTags
                             .filter(tag =>
                               tag.toLowerCase().includes(filtros.tags.toLowerCase())
