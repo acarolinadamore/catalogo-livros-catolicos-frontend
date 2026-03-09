@@ -635,7 +635,7 @@ function ListarLivros() {
                   </th>
                 </tr>
                 {/* Linha de Filtros */}
-                <tr className="bg-gray-100 sticky top-[52px] z-10">
+                <tr className="bg-gray-100 sticky top-[52px] z-30">
                   <th className="px-3 py-2 bg-gray-100">
                     <input
                       type="text"
@@ -744,7 +744,7 @@ function ListarLivros() {
                       )}
                     </div>
                   </th>
-                  <th className="px-3 py-2 bg-gray-100 sticky right-0 z-20 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]"></th>
+                  <th className="px-3 py-2 bg-gray-100 sticky right-0 z-40 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]"></th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
