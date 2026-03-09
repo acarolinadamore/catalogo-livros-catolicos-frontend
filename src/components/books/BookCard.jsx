@@ -44,6 +44,13 @@ function BookCard({ book }) {
         </p>
       )}
 
+      {/* Descrição resumida */}
+      {book.description && (
+        <p className="text-sm text-gray-500 line-clamp-2 mb-2">
+          {book.description}
+        </p>
+      )}
+
       {/* Tags */}
       {book.tags && (
         <div className="mb-2">
@@ -51,25 +58,18 @@ function BookCard({ book }) {
             {book.tags.split(',').slice(0, 3).map((tag, index) => (
               <span
                 key={index}
-                className="inline-flex items-center px-2.5 py-0.5 bg-primary-100 text-primary-700 rounded-full text-xs font-medium"
+                className="inline-flex items-center px-2.5 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium"
               >
                 {tag.trim()}
               </span>
             ))}
             {book.tags.split(',').length > 3 && (
-              <span className="inline-flex items-center px-2.5 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+              <span className="inline-flex items-center px-2.5 py-0.5 bg-gray-200 text-gray-600 rounded-full text-xs font-medium">
                 +{book.tags.split(',').length - 3}
               </span>
             )}
           </div>
         </div>
-      )}
-
-      {/* Descrição resumida */}
-      {book.description && (
-        <p className="text-sm text-gray-500 line-clamp-2">
-          {book.description}
-        </p>
       )}
 
       {/* Metadados adicionais */}
