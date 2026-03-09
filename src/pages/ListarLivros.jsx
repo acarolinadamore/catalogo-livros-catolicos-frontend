@@ -629,7 +629,7 @@ function ListarLivros() {
               <table className="w-full divide-y divide-gray-200 relative">
               <thead className="bg-gray-50 md:sticky md:top-0 z-10">
                 <tr>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 md:sticky md:top-0 min-w-[280px]">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 md:sticky md:top-0 min-w-[200px]">
                     Livro
                   </th>
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 md:sticky md:top-0">
@@ -1163,7 +1163,7 @@ function ListarLivros() {
                   ) : (
                     // Linha Normal
                     <tr key={livro.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-4 min-w-[280px]">
+                      <td className="px-3 py-4 min-w-[200px]">
                         <div className="flex items-center gap-3">
                           {livro.cover_url && (
                             <img
