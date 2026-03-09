@@ -3,12 +3,13 @@
  * Mostra todos os livros cadastrados com opções para visualizar, editar e excluir
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, Edit2, Trash2, X, Check, Settings, Plus, Search, ExternalLink } from 'lucide-react';
+import { Eye, Edit2, Trash2, X, Check, Settings, Plus, Search, ExternalLink, ChevronDown } from 'lucide-react';
 
 function ListarLivros() {
   const navigate = useNavigate();
+  const tagsDropdownRef = useRef(null);
   const [livros, setLivros] = useState([]);
   const [livrosFiltrados, setLivrosFiltrados] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,6 +63,8 @@ function ListarLivros() {
   const [novaCategoria, setNovaCategoria] = useState('');
   const [editingCategory, setEditingCategory] = useState(null);
   const [editingCategoryValue, setEditingCategoryValue] = useState('');
+  const [showTagsDropdown, setShowTagsDropdown] = useState(false);
+  const [tagSearchQuery, setTagSearchQuery] = useState('');
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -130,6 +133,36 @@ function ListarLivros() {
 
     setLivrosFiltrados(resultado);
   }, [filtros, livros, searchQuery]);
+
+  // Extrair todas as tags únicas dos livros
+  const todasTags = useMemo(() => {
+    const tagsSet = new Set();
+    livros.forEach(livro => {
+      if (livro.tags) {
+        livro.tags.split(',').forEach(tag => {
+          const trimmedTag = tag.trim();
+          if (trimmedTag) {
+            tagsSet.add(trimmedTag);
+          }
+        });
+      }
+    });
+    return Array.from(tagsSet).sort();
+  }, [livros]);
+
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (tagsDropdownRef.current && !tagsDropdownRef.current.contains(event.target)) {
+        setShowTagsDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const carregarLivros = async () => {
     try {
@@ -656,14 +689,58 @@ function ListarLivros() {
                     />
                   </th>
                   <th className="px-3 py-2 bg-gray-100">
-                    <input
-                      type="text"
-                      name="tags"
-                      value={filtros.tags}
-                      onChange={handleFiltroChange}
-                      placeholder="Filtrar tags..."
-                      className="w-full px-2 py-1.5 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    />
+                    <div className="relative" ref={tagsDropdownRef}>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={filtros.tags}
+                          onChange={(e) => {
+                            setFiltros(prev => ({ ...prev, tags: e.target.value }));
+                            setTagSearchQuery(e.target.value);
+                            setShowTagsDropdown(true);
+                          }}
+                          onFocus={() => setShowTagsDropdown(true)}
+                          placeholder="Buscar tag..."
+                          className="w-full px-2 py-1.5 pr-8 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowTagsDropdown(!showTagsDropdown)}
+                          className="absolute right-1 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded"
+                        >
+                          <ChevronDown className="h-4 w-4 text-gray-400" />
+                        </button>
+                      </div>
+
+                      {showTagsDropdown && todasTags.length > 0 && (
+                        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto custom-scrollbar">
+                          {todasTags
+                            .filter(tag =>
+                              tag.toLowerCase().includes(filtros.tags.toLowerCase())
+                            )
+                            .map((tag, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                onClick={() => {
+                                  setFiltros(prev => ({ ...prev, tags: tag }));
+                                  setShowTagsDropdown(false);
+                                }}
+                                className="w-full px-3 py-2 text-left text-sm hover:bg-primary-50 hover:text-primary-700 transition-colors"
+                              >
+                                {tag}
+                              </button>
+                            ))}
+                          {todasTags.filter(tag =>
+                            tag.toLowerCase().includes(filtros.tags.toLowerCase())
+                          ).length === 0 && (
+                            <div className="px-3 py-2 text-sm text-gray-500 text-center">
+                              Nenhuma tag encontrada
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </th>
                   <th className="px-3 py-2 bg-gray-100 sticky right-0 z-20 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]"></th>
                 </tr>
@@ -1041,7 +1118,7 @@ function ListarLivros() {
                               setIndiceModalContent({ titulo: livro.title, indice: livro.index_text });
                               setShowIndiceModal(true);
                             }}
-                            className="text-left hover:text-primary-600 hover:underline cursor-pointer transition-colors"
+                            className="text-left cursor-pointer"
                             title="Clique para ver o índice completo"
                           >
                             {livro.index_text.length > 30 ? livro.index_text.substring(0, 30) + '...' : livro.index_text}
