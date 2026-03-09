@@ -1131,7 +1131,7 @@ function ListarLivros() {
                             {livro.tags.split(',').map((tag, index) => (
                               <span
                                 key={index}
-                                className="inline-block px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-medium"
+                                className="inline-flex items-center px-2.5 py-0.5 bg-primary-100 text-primary-700 rounded-full text-xs font-medium"
                               >
                                 {tag.trim()}
                               </span>
