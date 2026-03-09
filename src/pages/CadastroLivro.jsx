@@ -5,6 +5,7 @@
  */
 
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import { Settings, Plus, Edit2, Trash2, X, Check } from "lucide-react"
 
 function CadastroLivro() {
@@ -296,6 +297,13 @@ function CadastroLivro() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Breadcrumb */}
+      <nav className="mb-8">
+        <Link to="/listar" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
+          ← Voltar à lista
+        </Link>
+      </nav>
+
       {/* Cabeçalho */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-serif font-bold text-gray-900">
