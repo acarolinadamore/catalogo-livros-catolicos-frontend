@@ -58,7 +58,7 @@ function BookCard({ book }) {
             {book.tags.split(',').slice(0, 3).map((tag, index) => (
               <span
                 key={index}
-                className="inline-flex items-center px-2.5 py-0.5 bg-blue-50 text-blue-600 rounded-full text-xs font-medium"
+                className="inline-flex items-center px-2.5 py-0.5 bg-blue-50 text-blue-400 rounded-full text-xs font-medium"
               >
                 {tag.trim()}
               </span>

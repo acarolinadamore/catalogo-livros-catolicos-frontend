@@ -7,18 +7,6 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { booksAPI } from '../config/api';
 
-// Ícones por tipo de conteúdo
-const contentTypeIcons = {
-  'Bíblia': '📖',
-  'Teologia': '✝️',
-  'Espiritualidade': '🕊️',
-  'Catequese': '📚',
-  'Liturgia': '⛪',
-  'História da Igreja': '🏛️',
-  'Doutrina Social': '🤝',
-  'Vida de Santos': '👼',
-  'Documentos da Igreja': '📜'
-};
 
 function BookDetails() {
   const { id } = useParams();
@@ -102,7 +90,7 @@ function BookDetails() {
                   className="w-full h-full object-cover rounded-lg"
                 />
               ) : (
-                <span>{contentTypeIcons[book.content_type] || '📕'}</span>
+                <span>📖</span>
               )}
             </div>
           </div>
@@ -112,7 +100,7 @@ function BookDetails() {
         <div className="lg:col-span-8">
           {/* Categoria */}
           {book.content_type && (
-            <span className="category-badge mb-4 inline-block">
+            <span className="category-badge text-xs mb-4 inline-block w-auto">
               {book.content_type}
             </span>
           )}
@@ -136,7 +124,7 @@ function BookDetails() {
                 {book.tags.split(',').map((tag, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center px-2.5 py-0.5 bg-blue-50 text-blue-600 rounded-full text-xs font-medium"
+                    className="inline-flex items-center px-2.5 py-0.5 bg-blue-50 text-blue-400 rounded-full text-xs font-medium"
                   >
                     {tag.trim()}
                   </span>
