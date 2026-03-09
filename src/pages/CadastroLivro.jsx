@@ -265,6 +265,9 @@ function CadastroLivro() {
         text: "Livro cadastrado com sucesso!",
       })
 
+      // Rolar para o topo para mostrar a mensagem
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+
       // Limpar formulário
       setFormData({
         titulo: "",
@@ -289,6 +292,8 @@ function CadastroLivro() {
         type: "error",
         text: "Erro ao cadastrar livro. Por favor, tente novamente.",
       })
+      // Rolar para o topo para mostrar a mensagem de erro
+      window.scrollTo({ top: 0, behavior: 'smooth' })
       setUploadProgress(0)
     } finally {
       setIsSubmitting(false)
