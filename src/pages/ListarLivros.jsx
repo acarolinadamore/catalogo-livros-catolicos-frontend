@@ -7,6 +7,15 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, Edit2, Trash2, X, Check, Settings, Plus, Search, ExternalLink, ChevronDown } from 'lucide-react';
 
+// Função para normalizar texto removendo acentos e convertendo para lowercase
+const normalizeText = (text) => {
+  if (!text) return '';
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+};
+
 function ListarLivros() {
   const navigate = useNavigate();
   const tagsDropdownRef = useRef(null);
@@ -80,38 +89,42 @@ function ListarLivros() {
 
     // Filtro de busca geral
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+      const query = normalizeText(searchQuery);
       resultado = resultado.filter(livro =>
-        livro.title.toLowerCase().includes(query) ||
-        livro.author.toLowerCase().includes(query) ||
-        (livro.publisher && livro.publisher.toLowerCase().includes(query)) ||
-        (livro.category && livro.category.toLowerCase().includes(query)) ||
-        (livro.index_text && livro.index_text.toLowerCase().includes(query)) ||
-        (livro.tags && livro.tags.toLowerCase().includes(query))
+        normalizeText(livro.title).includes(query) ||
+        normalizeText(livro.author).includes(query) ||
+        normalizeText(livro.publisher).includes(query) ||
+        normalizeText(livro.category).includes(query) ||
+        normalizeText(livro.index_text).includes(query) ||
+        normalizeText(livro.tags).includes(query)
       );
     }
 
     if (filtros.titulo) {
+      const query = normalizeText(filtros.titulo);
       resultado = resultado.filter(livro =>
-        livro.title.toLowerCase().includes(filtros.titulo.toLowerCase())
+        normalizeText(livro.title).includes(query)
       );
     }
 
     if (filtros.autor) {
+      const query = normalizeText(filtros.autor);
       resultado = resultado.filter(livro =>
-        livro.author.toLowerCase().includes(filtros.autor.toLowerCase())
+        normalizeText(livro.author).includes(query)
       );
     }
 
     if (filtros.editora) {
+      const query = normalizeText(filtros.editora);
       resultado = resultado.filter(livro =>
-        livro.publisher && livro.publisher.toLowerCase().includes(filtros.editora.toLowerCase())
+        normalizeText(livro.publisher).includes(query)
       );
     }
 
     if (filtros.categoria) {
+      const query = normalizeText(filtros.categoria);
       resultado = resultado.filter(livro =>
-        livro.category && livro.category.toLowerCase().includes(filtros.categoria.toLowerCase())
+        normalizeText(livro.category).includes(query)
       );
     }
 
@@ -122,17 +135,18 @@ function ListarLivros() {
     }
 
     if (filtros.indice) {
+      const query = normalizeText(filtros.indice);
       resultado = resultado.filter(livro =>
-        livro.index_text && livro.index_text.toLowerCase().includes(filtros.indice.toLowerCase())
+        normalizeText(livro.index_text).includes(query)
       );
     }
 
     if (filtros.tags.length > 0) {
       resultado = resultado.filter(livro => {
         if (!livro.tags) return false;
-        const livroTags = livro.tags.toLowerCase();
+        const livroTags = normalizeText(livro.tags);
         return filtros.tags.every(filterTag =>
-          livroTags.includes(filterTag.toLowerCase())
+          livroTags.includes(normalizeText(filterTag))
         );
       });
     }
@@ -778,7 +792,7 @@ function ListarLivros() {
                           {todasTags
                             .filter(tag =>
                               !filtros.tags.includes(tag) &&
-                              tag.toLowerCase().includes(tagSearchQuery.toLowerCase())
+                              normalizeText(tag).includes(normalizeText(tagSearchQuery))
                             )
                             .map((tag, index) => (
                               <button
@@ -798,7 +812,7 @@ function ListarLivros() {
                             ))}
                           {todasTags.filter(tag =>
                             !filtros.tags.includes(tag) &&
-                            tag.toLowerCase().includes(tagSearchQuery.toLowerCase())
+                            normalizeText(tag).includes(normalizeText(tagSearchQuery))
                           ).length === 0 && (
                             <div className="px-3 py-2 text-sm text-gray-500 text-center">
                               {filtros.tags.length === todasTags.length ? 'Todas as tags selecionadas' : 'Nenhuma tag encontrada'}
