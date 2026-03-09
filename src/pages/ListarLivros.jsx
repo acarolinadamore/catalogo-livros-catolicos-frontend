@@ -420,7 +420,7 @@ function ListarLivros() {
   };
 
   const handleRemoveCategoria = async (categoria) => {
-    const livrosComCategoria = livros.filter(livro => livro.categoria === categoria);
+    const livrosComCategoria = livros.filter(livro => livro.category === categoria);
     const mensagem = livrosComCategoria.length > 0
       ? `Deseja realmente remover a categoria "${categoria}"?\n\n${livrosComCategoria.length} livro(s) com esta categoria terão a categoria removida.`
       : `Deseja realmente remover a categoria "${categoria}"?`;
@@ -431,27 +431,29 @@ function ListarLivros() {
 
       // Atualiza os livros que têm essa categoria, removendo-a
       if (livrosComCategoria.length > 0) {
-        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
         try {
-          // Atualiza cada livro removendo a categoria
-          await Promise.all(
-            livrosComCategoria.map(livro =>
-              fetch(`${API_BASE_URL}/books/${livro.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...livro, categoria: '' })
-              })
-            )
-          );
+          // Chama a nova API para limpar a categoria de todos os livros de uma vez
+          const response = await fetch(`${API_BASE_URL}/books/clear-category`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ category: categoria })
+          });
+
+          if (!response.ok) {
+            throw new Error('Erro ao limpar categoria');
+          }
+
+          const data = await response.json();
 
           // Recarrega a lista de livros
-          await loadBooks();
-          setMessage({ type: 'success', text: `Categoria "${categoria}" removida com sucesso!` });
+          await carregarLivros();
+          setMessage({ type: 'success', text: data.message || `Categoria "${categoria}" removida com sucesso!` });
         } catch (error) {
           console.error('Erro ao atualizar livros:', error);
           setMessage({ type: 'error', text: 'Erro ao atualizar livros após remover categoria' });
         }
+      } else {
+        setMessage({ type: 'success', text: `Categoria "${categoria}" removida da lista!` });
       }
     }
   };

@@ -102,9 +102,37 @@ function CadastroLivro() {
     }
   }
 
-  const handleRemoveCategoria = (categoria) => {
-    if (confirm(`Deseja realmente remover a categoria "${categoria}"?`)) {
-      setCategorias(categorias.filter(cat => cat !== categoria))
+  const handleRemoveCategoria = async (categoria) => {
+    const mensagem = `Deseja realmente remover a categoria "${categoria}"?\n\nTodos os livros com esta categoria terão a categoria removida.`;
+
+    if (confirm(mensagem)) {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
+      try {
+        // Chama a API para limpar a categoria de todos os livros
+        await fetch(`${API_BASE_URL}/books/clear-category`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ category: categoria })
+        });
+
+        // Remove a categoria da lista local
+        setCategorias(categorias.filter(cat => cat !== categoria));
+
+        setSubmitMessage({
+          type: 'success',
+          text: `Categoria "${categoria}" removida com sucesso!`
+        });
+
+        // Limpa a mensagem após 3 segundos
+        setTimeout(() => setSubmitMessage({ type: '', text: '' }), 3000);
+      } catch (error) {
+        console.error('Erro ao remover categoria:', error);
+        setSubmitMessage({
+          type: 'error',
+          text: 'Erro ao remover categoria. Tente novamente.'
+        });
+      }
     }
   }
 
