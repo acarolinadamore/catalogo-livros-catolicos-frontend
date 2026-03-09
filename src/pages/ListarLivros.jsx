@@ -1149,7 +1149,7 @@ function ListarLivros() {
                   ) : (
                     // Linha Normal
                     <tr key={livro.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-4 max-w-[250px] sm:max-w-xs">
+                      <td className="px-3 py-4 max-w-[320px] sm:max-w-md">
                         <div className="flex items-center gap-3">
                           {livro.cover_url && (
                             <img
