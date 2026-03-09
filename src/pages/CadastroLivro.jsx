@@ -265,8 +265,12 @@ function CadastroLivro() {
         text: "Livro cadastrado com sucesso!",
       })
 
-      // Rolar para o topo para mostrar a mensagem
+      // Rolar para o topo para mostrar a mensagem (com animação mais suave)
       window.scrollTo({ top: 0, behavior: 'smooth' })
+      // Adiciona um delay adicional para garantir animação suave
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }, 100)
 
       // Limpar formulário
       setFormData({
