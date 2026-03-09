@@ -590,8 +590,8 @@ function CadastroLivro() {
                 {tagsList.map((tag, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 rounded-full text-sm font-medium"
-                    style={{ color: '#5A89B4' }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium border"
+                    style={{ color: '#5A89B4', borderColor: '#5A89B4' }}
                   >
                     {tag}
                     <button

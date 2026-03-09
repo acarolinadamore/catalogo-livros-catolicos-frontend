@@ -630,7 +630,7 @@ function ListarLivros() {
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
                     Tags
                   </th>
-                  <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 right-0 z-20 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]">
+                  <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 right-0 z-50 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]">
                     Ações
                   </th>
                 </tr>
@@ -1069,8 +1069,8 @@ function ListarLivros() {
                                   {tagsList.map((tag, index) => (
                                     <span
                                       key={index}
-                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 rounded-full text-sm font-medium"
-                                      style={{ color: '#5A89B4' }}
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium border"
+                                      style={{ color: '#5A89B4', borderColor: '#5A89B4' }}
                                     >
                                       {tag}
                                       <button
