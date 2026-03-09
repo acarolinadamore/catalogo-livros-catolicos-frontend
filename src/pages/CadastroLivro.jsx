@@ -687,7 +687,7 @@ function CadastroLivro() {
         )}
 
         {/* Botões de ação */}
-        <div className="mt-8 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 sm:justify-end">
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-end">
           <button
             type="button"
             onClick={() => {
