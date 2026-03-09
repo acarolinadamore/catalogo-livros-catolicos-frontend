@@ -65,6 +65,8 @@ function ListarLivros() {
   const [editingCategoryValue, setEditingCategoryValue] = useState('');
   const [showTagsDropdown, setShowTagsDropdown] = useState(false);
   const [tagSearchQuery, setTagSearchQuery] = useState('');
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageModalContent, setImageModalContent] = useState({ titulo: '', imageUrl: '' });
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -1089,10 +1091,15 @@ function ListarLivros() {
                             <img
                               src={livro.cover_url}
                               alt={livro.title}
-                              className="h-16 w-12 object-cover rounded mr-3"
+                              className="h-16 w-12 object-cover rounded mr-3 cursor-pointer hover:opacity-80 transition-opacity"
+                              onClick={() => {
+                                setImageModalContent({ titulo: livro.title, imageUrl: livro.cover_url });
+                                setShowImageModal(true);
+                              }}
                               onError={(e) => {
                                 e.target.style.display = 'none';
                               }}
+                              title="Clique para ampliar"
                             />
                           )}
                           <div className="text-sm font-medium text-gray-900">
@@ -1342,6 +1349,55 @@ function ListarLivros() {
                 >
                   Fechar
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de Imagem Ampliada */}
+        {showImageModal && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowImageModal(false)}
+          >
+            <div
+              className="relative max-w-5xl w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="bg-white rounded-t-lg px-6 py-4 flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-gray-900">{imageModalContent.titulo}</h2>
+                <button
+                  onClick={() => setShowImageModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              {/* Body - Imagem */}
+              <div className="bg-white rounded-b-lg p-6">
+                <div className="flex justify-center">
+                  <img
+                    src={imageModalContent.imageUrl}
+                    alt={imageModalContent.titulo}
+                    className="max-h-[70vh] w-auto object-contain rounded-lg shadow-lg"
+                    onError={(e) => {
+                      e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600"%3E%3Crect fill="%23f3f4f6" width="400" height="600"/%3E%3Ctext x="50%25" y="50%25" fill="%239ca3af" font-size="20" text-anchor="middle" dy=".3em"%3EImagem não disponível%3C/text%3E%3C/svg%3E';
+                    }}
+                  />
+                </div>
+                <div className="mt-4 text-center">
+                  <a
+                    href={imageModalContent.imageUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 underline"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Abrir imagem em nova aba
+                  </a>
+                </div>
               </div>
             </div>
           </div>
