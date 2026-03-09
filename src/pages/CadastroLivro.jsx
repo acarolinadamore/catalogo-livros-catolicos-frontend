@@ -70,70 +70,164 @@ function CadastroLivro() {
   const extractBookInfo = (text) => {
     if (!text) return null
 
-    const lines = text.split('\n').filter(line => line.trim().length > 3)
+    // Limpar texto: remover caracteres especiais e normalizar espaços
+    const cleanedText = text.replace(/[^\w\sçãõáéíóúâêîôûàèìòùäëïöü]/gi, ' ')
+    const lines = cleanedText.split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 2)
 
-    // Procurar por título (geralmente a primeira linha significativa ou linha com mais caracteres em maiúsculas)
+    console.log('Linhas processadas:', lines)
+
     let titulo = ''
     let autor = ''
     let ano = ''
     let editora = ''
 
-    // Encontrar título: linha mais longa ou primeira linha com palavras capitalizadas
+    // Encontrar título: Priorizar linhas com mais de 10 caracteres e que estejam no topo
     const titleCandidates = lines
-      .filter(line => line.length > 5)
-      .sort((a, b) => b.length - a.length)
+      .slice(0, Math.min(5, lines.length)) // Olhar apenas as primeiras 5 linhas
+      .filter(line => line.length >= 10)
+      .filter(line => {
+        // Filtrar linhas que parecem ser títulos (mais caracteres maiúsculos ou palavras capitalizadas)
+        const upperCount = (line.match(/[A-ZÇÃÕÁÉÍÓÚÂÊÎÔÛ]/g) || []).length
+        return upperCount >= 3 || /^[A-ZÇÃÕÁÉÍÓÚÂÊÎÔÛ]/.test(line)
+      })
 
     if (titleCandidates.length > 0) {
-      titulo = titleCandidates[0].trim()
+      // Pegar a linha mais longa entre os candidatos
+      titulo = titleCandidates.sort((a, b) => b.length - a.length)[0].trim()
+    } else if (lines.length > 0) {
+      // Se não encontrou nada, pegar a primeira linha
+      titulo = lines[0].trim()
     }
 
-    // Procurar por autor (padrões: "por ", "de ", "Autor:", nomes próprios)
+    // Procurar por autor - padrões mais flexíveis
     const authorPatterns = [
-      /(?:por|de|autor:|author:)\s*([A-Z][a-zçãõáéíóú]+(?:\s+[A-Z][a-zçãõáéíóú]+)+)/i,
-      /([A-Z][a-zçãõáéíóú]+\s+[A-Z][a-zçãõáéíóú]+)/
+      /(?:por|de|author|autor|escrito\s+por)\s*[:\-]?\s*([a-zçãõáéíóúâêîôû\s]+)/i,
+      /\b([A-ZÇÃÕÁÉÍÓÚ][a-zçãõáéíóúâêîôû]+(?:\s+[A-ZÇÃÕÁÉÍÓÚ][a-zçãõáéíóúâêîôû]+){1,4})\b/
     ]
 
     for (const line of lines) {
+      // Pular se for muito curto ou se já for o título
+      if (line.length < 5 || line === titulo) continue
+
       for (const pattern of authorPatterns) {
         const match = line.match(pattern)
-        if (match && !autor) {
-          autor = match[1] || match[0]
-          autor = autor.replace(/^(por|de|autor:|author:)\s*/i, '').trim()
-          break
+        if (match) {
+          let candidate = match[1] || match[0]
+          candidate = candidate.replace(/^(por|de|autor|author|escrito\s+por)[:\-\s]*/i, '').trim()
+
+          // Validar: deve ter pelo menos 2 palavras e começar com maiúscula
+          const words = candidate.split(/\s+/)
+          if (words.length >= 2 && /^[A-ZÇÃÕÁÉÍÓÚ]/.test(candidate)) {
+            autor = candidate
+            break
+          }
         }
       }
       if (autor) break
     }
 
-    // Procurar ano (regex para 1800-2100)
-    const yearPattern = /(1[89]\d{2}|20\d{2})/
+    // Procurar ano - mais flexível (1500-2100)
+    const yearPattern = /(1[5-9]\d{2}|20\d{2}|21\d{2})/
     for (const line of lines) {
       const match = line.match(yearPattern)
       if (match) {
-        ano = match[1]
-        break
+        const year = parseInt(match[1])
+        // Validar ano razoável
+        if (year >= 1500 && year <= new Date().getFullYear() + 5) {
+          ano = match[1]
+          break
+        }
       }
     }
 
-    // Procurar editora (padrões comuns)
+    // Procurar editora - padrões mais amplos
     const publisherPatterns = [
-      /(?:editora|ed\.|publisher:)\s*([A-Z][a-zçãõáéíóú]+(?:\s+[A-Z][a-zçãõáéíóú]+)*)/i,
-      /([A-Z][a-zçãõáéíóú]+\s+(?:editora|publicações|livros))/i
+      /(?:editora|editor|ed|publicado\s+por)\s*[:\-]?\s*([a-zçãõáéíóúâêîôû\s]+)/i,
+      /\b([A-ZÇÃÕÁÉÍÓÚ][a-zçãõáéíóúâêîôû]+)\s+(?:editora|editor|publicacoes|livros|books)\b/i,
+      /\b(?:editora|editor)\s+([A-ZÇÃÕÁÉÍÓÚ][a-zçãõáéíóúâêîôû]+(?:\s+[A-ZÇÃÕÁÉÍÓÚ][a-zçãõáéíóúâêîôû]+)*)/i
     ]
 
     for (const line of lines) {
+      if (line.length < 5 || line === titulo || line === autor) continue
+
       for (const pattern of publisherPatterns) {
         const match = line.match(pattern)
-        if (match && !editora) {
-          editora = match[1] || match[0]
-          editora = editora.replace(/^(editora|ed\.|publisher:)\s*/i, '').trim()
-          break
+        if (match) {
+          let candidate = match[1] || match[0]
+          candidate = candidate.replace(/^(editora|editor|ed|publicado\s+por)[:\-\s]*/i, '').trim()
+          candidate = candidate.replace(/\s+(editora|editor|publicacoes|livros|books)$/i, '').trim()
+
+          if (candidate.length >= 3) {
+            editora = candidate
+            break
+          }
         }
       }
       if (editora) break
     }
 
+    console.log('Informações extraídas:', { titulo, autor, ano, editora })
+
     return { titulo, autor, ano, editora }
+  }
+
+  // Função para pré-processar a imagem e melhorar a precisão do OCR
+  const preprocessImage = (imageFile) => {
+    return new Promise((resolve) => {
+      const img = new Image()
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+
+      img.onload = () => {
+        // Redimensionar se muito grande (max 2000px de largura)
+        let width = img.width
+        let height = img.height
+        const maxWidth = 2000
+
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width
+          width = maxWidth
+        }
+
+        canvas.width = width
+        canvas.height = height
+
+        // Desenhar imagem
+        ctx.drawImage(img, 0, 0, width, height)
+
+        // Aumentar contraste e nitidez
+        const imageData = ctx.getImageData(0, 0, width, height)
+        const data = imageData.data
+
+        // Converter para escala de cinza e aumentar contraste
+        for (let i = 0; i < data.length; i += 4) {
+          // Escala de cinza
+          const avg = (data[i] + data[i + 1] + data[i + 2]) / 3
+
+          // Aumentar contraste (fator de contraste = 1.5)
+          const factor = 1.5
+          let value = ((avg - 128) * factor) + 128
+
+          // Limitar entre 0-255
+          value = Math.max(0, Math.min(255, value))
+
+          data[i] = value     // R
+          data[i + 1] = value // G
+          data[i + 2] = value // B
+        }
+
+        ctx.putImageData(imageData, 0, 0)
+
+        // Converter canvas para blob
+        canvas.toBlob((blob) => {
+          resolve(blob)
+        }, 'image/png')
+      }
+
+      img.src = URL.createObjectURL(imageFile)
+    })
   }
 
   // Função para processar OCR na imagem
@@ -144,10 +238,14 @@ function CadastroLivro() {
       setOcrError("")
       setOcrSuggestions(null)
 
+      // Pré-processar a imagem para melhorar precisão
+      const processedImage = await preprocessImage(imageFile)
+
       // Importar Tesseract dinamicamente
       const { createWorker } = await import('tesseract.js')
 
-      const worker = await createWorker('por', 1, {
+      // Usar português e inglês para melhor detecção
+      const worker = await createWorker(['por', 'eng'], 1, {
         logger: (m) => {
           // Atualizar progresso baseado no status do Tesseract
           if (m.status === 'recognizing text') {
@@ -156,8 +254,14 @@ function CadastroLivro() {
         }
       })
 
-      // Processar a imagem
-      const { data: { text } } = await worker.recognize(imageFile)
+      // Configurar parâmetros do Tesseract para melhor precisão
+      await worker.setParameters({
+        tessedit_pageseg_mode: '1', // Automatic page segmentation with OSD (Orientation and Script Detection)
+        preserve_interword_spaces: '1',
+      })
+
+      // Processar a imagem pré-processada
+      const { data: { text } } = await worker.recognize(processedImage)
       await worker.terminate()
 
       console.log('Texto extraído do OCR:', text)
@@ -169,7 +273,7 @@ function CadastroLivro() {
         setOcrSuggestions(bookInfo)
         setOcrProgress(100)
       } else {
-        setOcrError("Não consegui identificar informações do livro na capa. Você pode preencher manualmente ou tentar outra foto.")
+        setOcrError("Não consegui identificar informações do livro na capa. Tente tirar uma foto mais nítida, com boa iluminação e sem reflexos.")
         setOcrProgress(0)
       }
 
@@ -709,6 +813,20 @@ function CadastroLivro() {
                     Tire uma foto ou escolha um arquivo
                   </label>
                 </div>
+
+                {/* Dicas para melhor OCR */}
+                <div className="mb-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-xs font-medium text-blue-800 mb-1">
+                    💡 Dicas para melhor leitura automática:
+                  </p>
+                  <ul className="text-xs text-blue-700 space-y-0.5 ml-4 list-disc">
+                    <li>Tire a foto com boa iluminação</li>
+                    <li>Centralize a capa do livro</li>
+                    <li>Evite reflexos e sombras</li>
+                    <li>Mantenha a câmera firme e focada</li>
+                  </ul>
+                </div>
+
                 <input
                   type="file"
                   id="capa_file"
