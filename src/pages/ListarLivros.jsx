@@ -627,35 +627,35 @@ function ListarLivros() {
           ) : (
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full divide-y divide-gray-200 relative">
-              <thead className="bg-gray-50 sticky top-0 z-10">
+              <thead className="bg-gray-50 md:sticky md:top-0 z-10">
                 <tr>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 md:sticky md:top-0 min-w-[280px]">
                     Livro
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 md:sticky md:top-0">
                     Autor
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 md:sticky md:top-0">
                     Editora
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 md:sticky md:top-0">
                     Categoria
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 min-w-[100px]">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 md:sticky md:top-0 min-w-[100px]">
                     Ano
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 md:sticky md:top-0">
                     Índice
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 md:sticky md:top-0">
                     Tags
                   </th>
-                  <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 right-0 z-[120] shadow-[-2px_0_4px_rgba(0,0,0,0.05)]">
+                  <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 md:sticky md:top-0 md:right-0 z-[120] shadow-[-2px_0_4px_rgba(0,0,0,0.05)]">
                     Ações
                   </th>
                 </tr>
                 {/* Linha de Filtros */}
-                <tr className="bg-gray-100 sticky top-[52px] z-[100]">
+                <tr className="bg-gray-100 md:sticky md:top-[52px] z-[100]">
                   <th className="px-3 py-2 bg-gray-100">
                     <input
                       type="text"
@@ -1163,7 +1163,7 @@ function ListarLivros() {
                   ) : (
                     // Linha Normal
                     <tr key={livro.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-4 max-w-[900px] sm:max-w-md">
+                      <td className="px-3 py-4 min-w-[280px]">
                         <div className="flex items-center gap-3">
                           {livro.cover_url && (
                             <img
