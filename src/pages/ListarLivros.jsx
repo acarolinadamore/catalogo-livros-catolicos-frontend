@@ -39,10 +39,13 @@ function ListarLivros() {
     editora: '',
     categoria: '',
     ano: '',
-    indice: ''
+    indice: '',
+    tags: ''
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showIndiceModal, setShowIndiceModal] = useState(false);
+  const [indiceModalContent, setIndiceModalContent] = useState({ titulo: '', indice: '' });
   const [categorias, setCategorias] = useState([
     'Espiritualidade',
     'Teologia',
@@ -116,6 +119,12 @@ function ListarLivros() {
     if (filtros.indice) {
       resultado = resultado.filter(livro =>
         livro.index_text && livro.index_text.toLowerCase().includes(filtros.indice.toLowerCase())
+      );
+    }
+
+    if (filtros.tags) {
+      resultado = resultado.filter(livro =>
+        livro.tags && livro.tags.toLowerCase().includes(filtros.tags.toLowerCase())
       );
     }
 
@@ -371,9 +380,40 @@ function ListarLivros() {
     }
   };
 
-  const handleRemoveCategoria = (categoria) => {
-    if (confirm(`Deseja realmente remover a categoria "${categoria}"?`)) {
+  const handleRemoveCategoria = async (categoria) => {
+    const livrosComCategoria = livros.filter(livro => livro.categoria === categoria);
+    const mensagem = livrosComCategoria.length > 0
+      ? `Deseja realmente remover a categoria "${categoria}"?\n\n${livrosComCategoria.length} livro(s) com esta categoria terão a categoria removida.`
+      : `Deseja realmente remover a categoria "${categoria}"?`;
+
+    if (confirm(mensagem)) {
+      // Remove a categoria da lista
       setCategorias(categorias.filter(cat => cat !== categoria));
+
+      // Atualiza os livros que têm essa categoria, removendo-a
+      if (livrosComCategoria.length > 0) {
+        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
+        try {
+          // Atualiza cada livro removendo a categoria
+          await Promise.all(
+            livrosComCategoria.map(livro =>
+              fetch(`${API_BASE_URL}/books/${livro.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...livro, categoria: '' })
+              })
+            )
+          );
+
+          // Recarrega a lista de livros
+          await loadBooks();
+          setMessage({ type: 'success', text: `Categoria "${categoria}" removida com sucesso!` });
+        } catch (error) {
+          console.error('Erro ao atualizar livros:', error);
+          setMessage({ type: 'error', text: 'Erro ao atualizar livros após remover categoria' });
+        }
+      }
     }
   };
 
@@ -546,13 +586,16 @@ function ListarLivros() {
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
                     Categoria
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 w-24">
                     Ano
                   </th>
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
                     Índice
                   </th>
-                  <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
+                    Tags
+                  </th>
+                  <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 right-0 z-20 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]">
                     Ações
                   </th>
                 </tr>
@@ -612,7 +655,17 @@ function ListarLivros() {
                       className="w-full px-2 py-1.5 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </th>
-                  <th className="px-3 py-2 bg-gray-100"></th>
+                  <th className="px-3 py-2 bg-gray-100">
+                    <input
+                      type="text"
+                      name="tags"
+                      value={filtros.tags}
+                      onChange={handleFiltroChange}
+                      placeholder="Filtrar tags..."
+                      className="w-full px-2 py-1.5 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    />
+                  </th>
+                  <th className="px-3 py-2 bg-gray-100 sticky right-0 z-20 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]"></th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -620,7 +673,7 @@ function ListarLivros() {
                   editingBook === livro.id ? (
                     // Formulário de Edição
                     <tr key={livro.id} className="bg-blue-50">
-                      <td colSpan="7" className="px-6 py-4">
+                      <td colSpan="8" className="px-6 py-4">
                         <form onSubmit={handleSaveEdit} className="space-y-4">
                           {/* Botões de ação no topo */}
                           <div className="flex gap-2 justify-end pb-4 border-b border-gray-300">
@@ -983,12 +1036,33 @@ function ListarLivros() {
                       </td>
                       <td className="px-3 py-4 text-sm text-gray-500">
                         {livro.index_text ? (
-                          <span title={livro.index_text}>
+                          <button
+                            onClick={() => {
+                              setIndiceModalContent({ titulo: livro.title, indice: livro.index_text });
+                              setShowIndiceModal(true);
+                            }}
+                            className="text-left hover:text-primary-600 hover:underline cursor-pointer transition-colors"
+                            title="Clique para ver o índice completo"
+                          >
                             {livro.index_text.length > 30 ? livro.index_text.substring(0, 30) + '...' : livro.index_text}
-                          </span>
+                          </button>
                         ) : '-'}
                       </td>
-                      <td className="px-3 py-4 text-center text-sm font-medium">
+                      <td className="px-3 py-4 text-sm text-gray-500">
+                        {livro.tags ? (
+                          <div className="flex flex-wrap gap-1">
+                            {livro.tags.split(',').map((tag, index) => (
+                              <span
+                                key={index}
+                                className="inline-block px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-medium"
+                              >
+                                {tag.trim()}
+                              </span>
+                            ))}
+                          </div>
+                        ) : '-'}
+                      </td>
+                      <td className="px-3 py-4 text-center text-sm font-medium bg-white sticky right-0 z-10 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]">
                         {showDeleteConfirm === livro.id ? (
                           <div className="flex gap-2 justify-center items-center">
                             <span className="text-gray-700 text-sm mr-2">Confirmar exclusão?</span>
@@ -1148,6 +1222,43 @@ function ListarLivros() {
               <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-end">
                 <button
                   onClick={() => setShowCategoryModal(false)}
+                  className="px-6 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de Índice */}
+        {showIndiceModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+              {/* Header */}
+              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-gray-900">Índice - {indiceModalContent.titulo}</h2>
+                <button
+                  onClick={() => setShowIndiceModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-6">
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                    {indiceModalContent.indice}
+                  </p>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-end">
+                <button
+                  onClick={() => setShowIndiceModal(false)}
                   className="px-6 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
                 >
                   Fechar

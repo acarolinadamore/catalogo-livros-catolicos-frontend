@@ -129,8 +129,24 @@ function BookDetails() {
             </p>
           )}
 
+          {/* Tags */}
+          {book.tags && (
+            <div className="mb-6">
+              <div className="flex flex-wrap gap-2">
+                {book.tags.split(',').map((tag, index) => (
+                  <span
+                    key={index}
+                    className="inline-block px-3 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-medium"
+                  >
+                    {tag.trim()}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Metadados */}
-          <div className="bg-gray-50 rounded-lg p-6 mb-6 space-y-3">
+          <div className="bg-gray-50 rounded-lg p-4 mb-6 space-y-3">
             {book.publisher && (
               <div className="flex items-start">
                 <span className="text-gray-500 font-medium w-32">Editora:</span>
@@ -163,8 +179,8 @@ function BookDetails() {
               <h2 className="text-xl font-serif font-bold text-gray-900 mb-3">
                 Descrição
               </h2>
-              <div className="bg-gray-50 rounded-lg p-6">
-                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-gray-700 leading-relaxed whitespace-pre-line text-sm">
                   {book.description}
                 </p>
               </div>
@@ -177,8 +193,8 @@ function BookDetails() {
               <h2 className="text-xl font-serif font-bold text-gray-900 mb-3">
                 Índice
               </h2>
-              <div className="bg-gray-50 rounded-lg p-6">
-                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-gray-700 leading-relaxed whitespace-pre-line text-sm">
                   {book.index_text}
                 </p>
               </div>

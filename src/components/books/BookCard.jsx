@@ -44,6 +44,27 @@ function BookCard({ book }) {
         </p>
       )}
 
+      {/* Tags */}
+      {book.tags && (
+        <div className="mb-2">
+          <div className="flex flex-wrap gap-1">
+            {book.tags.split(',').slice(0, 3).map((tag, index) => (
+              <span
+                key={index}
+                className="inline-block px-2 py-0.5 bg-primary-100 text-primary-700 rounded-full text-xs font-medium"
+              >
+                {tag.trim()}
+              </span>
+            ))}
+            {book.tags.split(',').length > 3 && (
+              <span className="inline-block px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                +{book.tags.split(',').length - 3}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Descrição resumida */}
       {book.description && (
         <p className="text-sm text-gray-500 line-clamp-2">
