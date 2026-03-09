@@ -1175,7 +1175,7 @@ function ListarLivros() {
                           </div>
                         ) : '-'}
                       </td>
-                      <td className="px-3 py-4 text-center text-sm font-medium bg-white sticky right-0 z-10 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]">
+                      <td className="px-3 py-4 text-center text-sm font-medium bg-white sticky right-0 z-[5] shadow-[-2px_0_4px_rgba(0,0,0,0.05)]">
                         {showDeleteConfirm === livro.id ? (
                           <div className="flex gap-2 justify-center items-center">
                             <span className="text-gray-700 text-sm mr-2">Confirmar exclusão?</span>
