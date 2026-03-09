@@ -41,7 +41,7 @@ function ListarLivros() {
     categoria: '',
     ano: '',
     indice: '',
-    tags: ''
+    tags: []
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -127,10 +127,14 @@ function ListarLivros() {
       );
     }
 
-    if (filtros.tags) {
-      resultado = resultado.filter(livro =>
-        livro.tags && livro.tags.toLowerCase().includes(filtros.tags.toLowerCase())
-      );
+    if (filtros.tags.length > 0) {
+      resultado = resultado.filter(livro => {
+        if (!livro.tags) return false;
+        const livroTags = livro.tags.toLowerCase();
+        return filtros.tags.every(filterTag =>
+          livroTags.includes(filterTag.toLowerCase())
+        );
+      });
     }
 
     setLivrosFiltrados(resultado);
@@ -562,7 +566,7 @@ function ListarLivros() {
         <div className="mb-6">
           <div className="flex justify-end mb-2">
             <p className="text-sm font-medium text-gray-700">
-              {searchQuery || filtros.titulo || filtros.autor || filtros.editora || filtros.categoria || filtros.ano || filtros.indice ? (
+              {searchQuery || filtros.titulo || filtros.autor || filtros.editora || filtros.categoria || filtros.ano || filtros.indice || filtros.tags.length > 0 ? (
                 <>Exibindo {livrosFiltrados.length} de {livros.length} livro{livros.length !== 1 ? 's' : ''}</>
               ) : (
                 <>Total de {livrosFiltrados.length} livro{livrosFiltrados.length !== 1 ? 's' : ''} cadastrado{livrosFiltrados.length !== 1 ? 's' : ''}</>
@@ -692,29 +696,54 @@ function ListarLivros() {
                   </th>
                   <th className="px-3 py-2 bg-gray-100">
                     <div className="relative" ref={tagsDropdownRef}>
-                      <div className="relative">
+                      <div className="relative min-h-[38px] border border-gray-300 rounded bg-white px-2 py-1 flex flex-wrap gap-1 items-center focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500">
+                        {/* Tags selecionadas como chips */}
+                        {filtros.tags.map((tag, index) => (
+                          <span
+                            key={index}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 bg-white rounded-full text-xs font-medium border"
+                            style={{ color: '#5A89B4', borderColor: '#5A89B4' }}
+                          >
+                            {tag}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setFiltros(prev => ({
+                                  ...prev,
+                                  tags: prev.tags.filter(t => t !== tag)
+                                }));
+                              }}
+                              className="hover:opacity-70 transition-opacity"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+
+                        {/* Input para buscar novas tags */}
                         <input
                           type="text"
-                          value={filtros.tags}
+                          value={tagSearchQuery}
                           onChange={(e) => {
-                            setFiltros(prev => ({ ...prev, tags: e.target.value }));
                             setTagSearchQuery(e.target.value);
                             setShowTagsDropdown(true);
                           }}
                           onFocus={() => setShowTagsDropdown(true)}
-                          placeholder="Buscar tag..."
-                          className="w-full px-2 py-1.5 pr-16 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          placeholder={filtros.tags.length === 0 ? "Buscar tag..." : ""}
+                          className="flex-1 min-w-[100px] text-sm font-normal border-0 focus:ring-0 focus:outline-none p-0.5"
                         />
-                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
-                          {filtros.tags && (
+
+                        <div className="flex gap-1">
+                          {filtros.tags.length > 0 && (
                             <button
                               type="button"
                               onClick={() => {
-                                setFiltros(prev => ({ ...prev, tags: '' }));
+                                setFiltros(prev => ({ ...prev, tags: [] }));
+                                setTagSearchQuery('');
                                 setShowTagsDropdown(false);
                               }}
-                              className="p-1 hover:bg-gray-200 rounded transition-colors"
-                              title="Limpar filtro"
+                              className="p-1 hover:bg-gray-100 rounded transition-colors"
+                              title="Limpar todas"
                             >
                               <X className="h-4 w-4 text-gray-500" />
                             </button>
@@ -731,29 +760,34 @@ function ListarLivros() {
 
                       {showTagsDropdown && todasTags.length > 0 && (
                         <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto custom-scrollbar">
-                          {filtros.tags && (
+                          {filtros.tags.length > 0 && (
                             <button
                               type="button"
                               onClick={() => {
-                                setFiltros(prev => ({ ...prev, tags: '' }));
+                                setFiltros(prev => ({ ...prev, tags: [] }));
+                                setTagSearchQuery('');
                                 setShowTagsDropdown(false);
                               }}
                               className="w-full px-3 py-2 text-left text-sm bg-gray-50 hover:bg-gray-100 font-medium text-gray-700 border-b border-gray-200"
                             >
-                              ✕ Limpar filtro
+                              ✕ Limpar todas as tags
                             </button>
                           )}
                           {todasTags
                             .filter(tag =>
-                              tag.toLowerCase().includes(filtros.tags.toLowerCase())
+                              !filtros.tags.includes(tag) &&
+                              tag.toLowerCase().includes(tagSearchQuery.toLowerCase())
                             )
                             .map((tag, index) => (
                               <button
                                 key={index}
                                 type="button"
                                 onClick={() => {
-                                  setFiltros(prev => ({ ...prev, tags: tag }));
-                                  setShowTagsDropdown(false);
+                                  setFiltros(prev => ({
+                                    ...prev,
+                                    tags: [...prev.tags, tag]
+                                  }));
+                                  setTagSearchQuery('');
                                 }}
                                 className="w-full px-3 py-2 text-left text-sm hover:bg-primary-50 hover:text-primary-700 transition-colors"
                               >
@@ -761,10 +795,11 @@ function ListarLivros() {
                               </button>
                             ))}
                           {todasTags.filter(tag =>
-                            tag.toLowerCase().includes(filtros.tags.toLowerCase())
+                            !filtros.tags.includes(tag) &&
+                            tag.toLowerCase().includes(tagSearchQuery.toLowerCase())
                           ).length === 0 && (
                             <div className="px-3 py-2 text-sm text-gray-500 text-center">
-                              Nenhuma tag encontrada
+                              {filtros.tags.length === todasTags.length ? 'Todas as tags selecionadas' : 'Nenhuma tag encontrada'}
                             </div>
                           )}
                         </div>

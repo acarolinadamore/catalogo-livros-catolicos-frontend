@@ -68,11 +68,8 @@ function Footer() {
           </div>
         </div>
 
-        {/* Copyright e Mensagem */}
+        {/* Copyright */}
         <div className="text-center pt-6 border-t border-gray-200">
-          <p className="text-xs text-gray-500 mb-2">
-            Feito para a glória de Deus
-          </p>
           <p className="text-xs text-gray-400">
             © {currentYear} Biblioteca Católica. Todos os direitos reservados.
           </p>
