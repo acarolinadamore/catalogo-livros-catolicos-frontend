@@ -136,7 +136,7 @@ function BookDetails() {
                 {book.tags.split(',').map((tag, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center px-2.5 py-0.5 bg-blue-50 text-blue-600 rounded-full text-xs font-medium"
+                    className="inline-flex items-center px-2.5 py-0.5 bg-primary-100 text-primary-800 rounded-full text-xs font-medium"
                   >
                     {tag.trim()}
                   </span>
@@ -146,27 +146,27 @@ function BookDetails() {
           )}
 
           {/* Metadados */}
-          <div className="bg-gray-50 rounded-lg p-4 mb-6 space-y-3">
+          <div className="mb-6 space-y-3">
             {book.publisher && (
-              <div className="flex items-start">
+              <div className="flex items-start text-sm">
                 <span className="text-gray-500 font-medium w-32">Editora:</span>
                 <span className="text-gray-900">{book.publisher}</span>
               </div>
             )}
             {book.year && (
-              <div className="flex items-start">
+              <div className="flex items-start text-sm">
                 <span className="text-gray-500 font-medium w-32">Ano:</span>
                 <span className="text-gray-900">{book.year}</span>
               </div>
             )}
             {book.intercessors && book.intercessors.length > 0 && (
-              <div className="flex items-start">
+              <div className="flex items-start text-sm">
                 <span className="text-gray-500 font-medium w-32">Intercessores:</span>
                 <span className="text-gray-900">{book.intercessors.join(', ')}</span>
               </div>
             )}
             {book.pastoral_uses && book.pastoral_uses.length > 0 && (
-              <div className="flex items-start">
+              <div className="flex items-start text-sm">
                 <span className="text-gray-500 font-medium w-32">Uso Pastoral:</span>
                 <span className="text-gray-900">{book.pastoral_uses.join(', ')}</span>
               </div>
