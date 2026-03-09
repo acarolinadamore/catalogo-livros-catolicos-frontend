@@ -6,7 +6,7 @@
 
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { Settings, Plus, Edit2, Trash2, X, Check } from "lucide-react"
+import { Settings, Plus, Edit2, Trash2, X, Check, Camera, Loader } from "lucide-react"
 
 function CadastroLivro() {
   const [formData, setFormData] = useState({
@@ -52,6 +52,12 @@ function CadastroLivro() {
   const [tagsList, setTagsList] = useState([])
   const [tagInput, setTagInput] = useState("")
 
+  // Estados para OCR (reconhecimento de texto da capa)
+  const [isProcessingOCR, setIsProcessingOCR] = useState(false)
+  const [ocrProgress, setOcrProgress] = useState(0)
+  const [ocrSuggestions, setOcrSuggestions] = useState(null)
+  const [ocrError, setOcrError] = useState("")
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -60,7 +66,154 @@ function CadastroLivro() {
     }))
   }
 
-  const handleFileChange = (e) => {
+  // Função auxiliar para extrair informações do texto OCR
+  const extractBookInfo = (text) => {
+    if (!text) return null
+
+    const lines = text.split('\n').filter(line => line.trim().length > 3)
+
+    // Procurar por título (geralmente a primeira linha significativa ou linha com mais caracteres em maiúsculas)
+    let titulo = ''
+    let autor = ''
+    let ano = ''
+    let editora = ''
+
+    // Encontrar título: linha mais longa ou primeira linha com palavras capitalizadas
+    const titleCandidates = lines
+      .filter(line => line.length > 5)
+      .sort((a, b) => b.length - a.length)
+
+    if (titleCandidates.length > 0) {
+      titulo = titleCandidates[0].trim()
+    }
+
+    // Procurar por autor (padrões: "por ", "de ", "Autor:", nomes próprios)
+    const authorPatterns = [
+      /(?:por|de|autor:|author:)\s*([A-Z][a-zçãõáéíóú]+(?:\s+[A-Z][a-zçãõáéíóú]+)+)/i,
+      /([A-Z][a-zçãõáéíóú]+\s+[A-Z][a-zçãõáéíóú]+)/
+    ]
+
+    for (const line of lines) {
+      for (const pattern of authorPatterns) {
+        const match = line.match(pattern)
+        if (match && !autor) {
+          autor = match[1] || match[0]
+          autor = autor.replace(/^(por|de|autor:|author:)\s*/i, '').trim()
+          break
+        }
+      }
+      if (autor) break
+    }
+
+    // Procurar ano (regex para 1800-2100)
+    const yearPattern = /(1[89]\d{2}|20\d{2})/
+    for (const line of lines) {
+      const match = line.match(yearPattern)
+      if (match) {
+        ano = match[1]
+        break
+      }
+    }
+
+    // Procurar editora (padrões comuns)
+    const publisherPatterns = [
+      /(?:editora|ed\.|publisher:)\s*([A-Z][a-zçãõáéíóú]+(?:\s+[A-Z][a-zçãõáéíóú]+)*)/i,
+      /([A-Z][a-zçãõáéíóú]+\s+(?:editora|publicações|livros))/i
+    ]
+
+    for (const line of lines) {
+      for (const pattern of publisherPatterns) {
+        const match = line.match(pattern)
+        if (match && !editora) {
+          editora = match[1] || match[0]
+          editora = editora.replace(/^(editora|ed\.|publisher:)\s*/i, '').trim()
+          break
+        }
+      }
+      if (editora) break
+    }
+
+    return { titulo, autor, ano, editora }
+  }
+
+  // Função para processar OCR na imagem
+  const processImageOCR = async (imageFile) => {
+    try {
+      setIsProcessingOCR(true)
+      setOcrProgress(0)
+      setOcrError("")
+      setOcrSuggestions(null)
+
+      // Importar Tesseract dinamicamente
+      const { createWorker } = await import('tesseract.js')
+
+      const worker = await createWorker('por', 1, {
+        logger: (m) => {
+          // Atualizar progresso baseado no status do Tesseract
+          if (m.status === 'recognizing text') {
+            setOcrProgress(Math.round(m.progress * 100))
+          }
+        }
+      })
+
+      // Processar a imagem
+      const { data: { text } } = await worker.recognize(imageFile)
+      await worker.terminate()
+
+      console.log('Texto extraído do OCR:', text)
+
+      // Extrair informações do texto
+      const bookInfo = extractBookInfo(text)
+
+      if (bookInfo && (bookInfo.titulo || bookInfo.autor)) {
+        setOcrSuggestions(bookInfo)
+        setOcrProgress(100)
+      } else {
+        setOcrError("Não consegui identificar informações do livro na capa. Você pode preencher manualmente ou tentar outra foto.")
+        setOcrProgress(0)
+      }
+
+    } catch (error) {
+      console.error('Erro ao processar OCR:', error)
+      setOcrError("Erro ao analisar a imagem. Por favor, preencha manualmente.")
+      setOcrProgress(0)
+    } finally {
+      setIsProcessingOCR(false)
+    }
+  }
+
+  // Função para aplicar sugestões do OCR
+  const handleApplySuggestions = () => {
+    if (ocrSuggestions) {
+      setFormData((prev) => ({
+        ...prev,
+        titulo: ocrSuggestions.titulo || prev.titulo,
+        autor: ocrSuggestions.autor || prev.autor,
+        ano: ocrSuggestions.ano || prev.ano,
+        editora: ocrSuggestions.editora || prev.editora,
+      }))
+      setOcrSuggestions(null)
+      setSubmitMessage({
+        type: "success",
+        text: "Sugestões aplicadas! Você pode editar os campos se necessário."
+      })
+      setTimeout(() => setSubmitMessage({ type: "", text: "" }), 3000)
+    }
+  }
+
+  // Função para ignorar sugestões do OCR
+  const handleIgnoreSuggestions = () => {
+    setOcrSuggestions(null)
+  }
+
+  // Função para tentar OCR novamente
+  const handleRetryOCR = () => {
+    if (selectedFile) {
+      processImageOCR(selectedFile)
+    }
+  }
+
+  const handleFileChange = async (e) => {
     const file = e.target.files[0]
     if (file) {
       // Validar tipo de arquivo
@@ -92,6 +245,9 @@ function CadastroLivro() {
       reader.readAsDataURL(file)
 
       setSubmitMessage({ type: "", text: "" })
+
+      // Iniciar OCR automaticamente
+      processImageOCR(file)
     }
   }
 
@@ -290,6 +446,11 @@ function CadastroLivro() {
       setUploadProgress(0)
       setTagsList([])
       setTagInput("")
+      // Limpar estados de OCR
+      setIsProcessingOCR(false)
+      setOcrProgress(0)
+      setOcrSuggestions(null)
+      setOcrError("")
     } catch (error) {
       console.error("Erro ao cadastrar livro:", error)
       setSubmitMessage({
@@ -542,40 +703,146 @@ function CadastroLivro() {
             {/* Campo de Upload */}
             {uploadMethod === "file" && (
               <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Camera className="h-5 w-5 text-primary-600" />
+                  <label htmlFor="capa_file" className="text-sm font-medium text-gray-700">
+                    Tire uma foto ou escolha um arquivo
+                  </label>
+                </div>
                 <input
                   type="file"
                   id="capa_file"
                   accept="image/jpeg,image/jpg,image/png"
+                  capture="environment"
                   onChange={handleFileChange}
                   className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
                 />
                 <p className="mt-1 text-sm text-gray-500">
-                  JPG ou PNG. Máximo 5MB
+                  JPG ou PNG. Máximo 5MB. A capa será analisada automaticamente para preencher os campos.
                 </p>
-                {selectedFile && (
-                  <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-sm font-medium text-green-800 mb-3">
-                      ✓ Arquivo selecionado: {selectedFile.name}
+
+                {/* Preview da imagem */}
+                {selectedFile && previewUrl && (
+                  <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm font-medium text-blue-800 mb-3 flex items-center gap-2">
+                      <Camera className="h-4 w-4" />
+                      Arquivo selecionado: {selectedFile.name}
                     </p>
-                    {previewUrl && (
-                      <div className="flex items-start gap-4">
-                        <div className="relative">
-                          <img
-                            src={previewUrl}
-                            alt="Preview da capa"
-                            className="h-32 w-24 object-cover rounded border border-green-300 shadow-sm"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm text-green-700 font-medium mb-1">
-                            Preview da imagem
-                          </p>
-                          <p className="text-xs text-green-600">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="relative flex-shrink-0">
+                        <img
+                          src={previewUrl}
+                          alt="Preview da capa"
+                          className="max-h-64 w-auto object-contain rounded-lg border-2 border-blue-300 shadow-lg mx-auto sm:mx-0"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-blue-700 font-medium mb-2">
+                          Preview da capa
+                        </p>
+
+                        {/* Loading do OCR */}
+                        {isProcessingOCR && (
+                          <div className="bg-white rounded-lg p-4 border border-blue-300 mb-3">
+                            <div className="flex items-center gap-3 mb-2">
+                              <Loader className="h-5 w-5 text-primary-600 animate-spin" />
+                              <p className="text-sm font-medium text-gray-800">
+                                Analisando a capa do livro...
+                              </p>
+                            </div>
+                            {ocrProgress > 0 && (
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                  className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${ocrProgress}%` }}
+                                />
+                              </div>
+                            )}
+                            <p className="text-xs text-gray-600 mt-1">
+                              Isso pode levar alguns segundos...
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Sugestões do OCR */}
+                        {ocrSuggestions && !isProcessingOCR && (
+                          <div className="bg-white rounded-lg p-4 border-2 border-green-400 mb-3">
+                            <p className="text-sm font-bold text-green-800 mb-3 flex items-center gap-2">
+                              ✓ Sugestões detectadas na capa:
+                            </p>
+                            <div className="space-y-2 mb-4">
+                              {ocrSuggestions.titulo && (
+                                <div className="text-sm">
+                                  <span className="font-medium text-gray-700">Título:</span>
+                                  <span className="ml-2 text-gray-900">{ocrSuggestions.titulo}</span>
+                                </div>
+                              )}
+                              {ocrSuggestions.autor && (
+                                <div className="text-sm">
+                                  <span className="font-medium text-gray-700">Autor:</span>
+                                  <span className="ml-2 text-gray-900">{ocrSuggestions.autor}</span>
+                                </div>
+                              )}
+                              {ocrSuggestions.editora && (
+                                <div className="text-sm">
+                                  <span className="font-medium text-gray-700">Editora:</span>
+                                  <span className="ml-2 text-gray-900">{ocrSuggestions.editora}</span>
+                                </div>
+                              )}
+                              {ocrSuggestions.ano && (
+                                <div className="text-sm">
+                                  <span className="font-medium text-gray-700">Ano:</span>
+                                  <span className="ml-2 text-gray-900">{ocrSuggestions.ano}</span>
+                                </div>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-600 mb-3">
+                              Deseja usar essas sugestões?
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                type="button"
+                                onClick={handleApplySuggestions}
+                                className="px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors flex items-center gap-1"
+                              >
+                                <Check className="h-4 w-4" />
+                                Usar sugestões
+                              </button>
+                              <button
+                                type="button"
+                                onClick={handleIgnoreSuggestions}
+                                className="px-3 py-1.5 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors flex items-center gap-1"
+                              >
+                                <X className="h-4 w-4" />
+                                Ignorar
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Erro do OCR */}
+                        {ocrError && !isProcessingOCR && (
+                          <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-300 mb-3">
+                            <p className="text-sm text-yellow-800 mb-2">
+                              {ocrError}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={handleRetryOCR}
+                              className="px-3 py-1.5 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition-colors"
+                            >
+                              Tentar novamente
+                            </button>
+                          </div>
+                        )}
+
+                        {!isProcessingOCR && !ocrSuggestions && !ocrError && (
+                          <p className="text-xs text-blue-600">
                             Esta imagem será enviada ao cadastrar o livro
                           </p>
-                        </div>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -718,6 +985,11 @@ function CadastroLivro() {
               setUploadProgress(0)
               setTagsList([])
               setTagInput("")
+              // Limpar estados de OCR
+              setIsProcessingOCR(false)
+              setOcrProgress(0)
+              setOcrSuggestions(null)
+              setOcrError("")
             }}
             className="btn-secondary w-full sm:w-auto"
             disabled={isSubmitting}
