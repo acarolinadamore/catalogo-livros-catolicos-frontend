@@ -163,9 +163,11 @@ function BookDetails() {
               <h2 className="text-xl font-serif font-bold text-gray-900 mb-3">
                 Descrição
               </h2>
-              <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                {book.description}
-              </p>
+              <div className="bg-gray-50 rounded-lg p-6">
+                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                  {book.description}
+                </p>
+              </div>
             </div>
           )}
 
@@ -176,7 +178,7 @@ function BookDetails() {
                 Índice
               </h2>
               <div className="bg-gray-50 rounded-lg p-6">
-                <p className="text-gray-700 leading-relaxed whitespace-pre-line text-sm">
+                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                   {book.index_text}
                 </p>
               </div>

@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Eye, Edit2, Trash2, X, Check, Settings, Plus, Search, ExternalLink } from 'lucide-react';
 
 function ListarLivros() {
   const navigate = useNavigate();
@@ -504,9 +505,7 @@ function ListarLivros() {
                        transition-all duration-200 shadow-sm placeholder:text-sm"
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <Search className="h-5 w-5 text-gray-400" />
             </div>
           </div>
         </div>
@@ -716,9 +715,7 @@ function ListarLivros() {
                                   className="p-2 text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors border border-gray-300"
                                   title="Gerenciar categorias"
                                 >
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-                                  </svg>
+                                  <Settings className="h-5 w-5" />
                                 </button>
                               </div>
                             </div>
@@ -769,9 +766,7 @@ function ListarLivros() {
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 mb-2 underline"
                                       >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                        </svg>
+                                        <ExternalLink className="h-4 w-4" />
                                         Ver imagem em tamanho real
                                       </a>
                                       <p className="text-xs text-gray-500 break-all mb-2">
@@ -900,14 +895,13 @@ function ListarLivros() {
                               />
                             </div>
 
-                            {/* Tags Pessoais */}
+                            {/* Tags */}
                             <div className="md:col-span-2">
                               <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Tags Pessoais <span className="text-gray-400 text-xs font-normal">(opcional)</span>
+                                Tags <span className="text-gray-400 text-xs font-normal">(opcional)</span>
                               </label>
                               <p className="text-xs text-gray-500 mb-2">
                                 Tags são palavras-chave personalizadas para ajudar você a organizar e encontrar seus livros.
-                                Elas são privadas e servem apenas para facilitar buscas.
                               </p>
 
                               {/* Chips das tags existentes */}
@@ -924,9 +918,7 @@ function ListarLivros() {
                                         onClick={() => handleRemoveTag(tag)}
                                         className="hover:text-primary-900 transition-colors"
                                       >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                                        </svg>
+                                        <X className="h-4 w-4" />
                                       </button>
                                     </span>
                                   ))}
@@ -940,14 +932,15 @@ function ListarLivros() {
                                   value={tagInput}
                                   onChange={(e) => setTagInput(e.target.value)}
                                   onKeyPress={handleTagInputKeyPress}
-                                  placeholder="Digite uma tag e pressione Enter"
+                                  placeholder="ex: leitura espiritual"
                                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                 />
                                 <button
                                   type="button"
                                   onClick={handleAddTag}
-                                  className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors"
+                                  className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-1"
                                 >
+                                  <Plus className="h-4 w-4" />
                                   Adicionar
                                 </button>
                               </div>
@@ -1019,28 +1012,21 @@ function ListarLivros() {
                               className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
                               title="Visualizar"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                              </svg>
+                              <Eye className="h-5 w-5" />
                             </button>
                             <button
                               onClick={() => handleEdit(livro)}
                               className="p-2 text-amber-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
                               title="Editar"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                              </svg>
+                              <Edit2 className="h-5 w-5" />
                             </button>
                             <button
                               onClick={() => setShowDeleteConfirm(livro.id)}
                               className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                               title="Excluir"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                              </svg>
+                              <Trash2 className="h-5 w-5" />
                             </button>
                           </div>
                         )}
@@ -1065,9 +1051,7 @@ function ListarLivros() {
                   onClick={() => setShowCategoryModal(false)}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X className="h-6 w-6" />
                 </button>
               </div>
 
@@ -1089,8 +1073,9 @@ function ListarLivros() {
                     />
                     <button
                       onClick={handleAddCategoria}
-                      className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors"
+                      className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-1"
                     >
+                      <Plus className="h-4 w-4" />
                       Adicionar
                     </button>
                   </div>
@@ -1123,18 +1108,14 @@ function ListarLivros() {
                               className="text-green-600 hover:text-green-700 hover:bg-green-50 p-1.5 rounded transition-colors"
                               title="Salvar"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
+                              <Check className="h-4 w-4" />
                             </button>
                             <button
                               onClick={handleCancelEditCategoria}
                               className="text-gray-600 hover:text-gray-700 hover:bg-gray-200 p-1.5 rounded transition-colors"
                               title="Cancelar"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                              </svg>
+                              <X className="h-4 w-4" />
                             </button>
                           </>
                         ) : (
@@ -1146,18 +1127,14 @@ function ListarLivros() {
                               className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1.5 rounded transition-colors"
                               title="Editar categoria"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                              </svg>
+                              <Edit2 className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => handleRemoveCategoria(categoria)}
                               className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1.5 rounded transition-colors"
                               title="Remover categoria"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                              </svg>
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           </>
                         )}

@@ -5,6 +5,7 @@
  */
 
 import { useState } from "react"
+import { Settings, Plus, Edit2, Trash2, X, Check } from "lucide-react"
 
 function CadastroLivro() {
   const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ function CadastroLivro() {
     isbn: "",
     capa_url: "",
     indice: "",
+    tags: "",
   })
 
   const [uploadMethod, setUploadMethod] = useState("file") // 'url' ou 'file'
@@ -25,6 +27,29 @@ function CadastroLivro() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState({ type: "", text: "" })
   const [uploadProgress, setUploadProgress] = useState(0)
+
+  // Estados para gerenciamento de categorias
+  const [categorias, setCategorias] = useState([
+    "Espiritualidade",
+    "Teologia",
+    "Catequese",
+    "Liturgia",
+    "Mariologia",
+    "Santos",
+    "Bíblia",
+    "História da Igreja",
+    "Doutrina Social",
+    "Filosofia",
+    "Outros"
+  ])
+  const [showCategoryModal, setShowCategoryModal] = useState(false)
+  const [novaCategoria, setNovaCategoria] = useState("")
+  const [editingCategory, setEditingCategory] = useState(null)
+  const [editingCategoryValue, setEditingCategoryValue] = useState("")
+
+  // Estados para gerenciamento de tags
+  const [tagsList, setTagsList] = useState([])
+  const [tagInput, setTagInput] = useState("")
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -66,6 +91,71 @@ function CadastroLivro() {
       reader.readAsDataURL(file)
 
       setSubmitMessage({ type: "", text: "" })
+    }
+  }
+
+  // Funções de gerenciamento de categorias
+  const handleAddCategoria = () => {
+    if (novaCategoria.trim() && !categorias.includes(novaCategoria.trim())) {
+      setCategorias([...categorias, novaCategoria.trim()].sort())
+      setNovaCategoria("")
+    }
+  }
+
+  const handleRemoveCategoria = (categoria) => {
+    if (confirm(`Deseja realmente remover a categoria "${categoria}"?`)) {
+      setCategorias(categorias.filter(cat => cat !== categoria))
+    }
+  }
+
+  const handleStartEditCategoria = (categoria) => {
+    setEditingCategory(categoria)
+    setEditingCategoryValue(categoria)
+  }
+
+  const handleSaveEditCategoria = () => {
+    if (editingCategoryValue.trim() && editingCategoryValue !== editingCategory) {
+      const updatedCategorias = categorias.map(cat =>
+        cat === editingCategory ? editingCategoryValue.trim() : cat
+      ).sort()
+      setCategorias(updatedCategorias)
+    }
+    setEditingCategory(null)
+    setEditingCategoryValue("")
+  }
+
+  const handleCancelEditCategoria = () => {
+    setEditingCategory(null)
+    setEditingCategoryValue("")
+  }
+
+  // Funções de gerenciamento de tags
+  const handleAddTag = () => {
+    const trimmedTag = tagInput.trim()
+    if (trimmedTag && !tagsList.includes(trimmedTag)) {
+      const newTagsList = [...tagsList, trimmedTag]
+      setTagsList(newTagsList)
+      setFormData(prev => ({
+        ...prev,
+        tags: newTagsList.join(', ')
+      }))
+      setTagInput("")
+    }
+  }
+
+  const handleRemoveTag = (tagToRemove) => {
+    const newTagsList = tagsList.filter(tag => tag !== tagToRemove)
+    setTagsList(newTagsList)
+    setFormData(prev => ({
+      ...prev,
+      tags: newTagsList.join(', ')
+    }))
+  }
+
+  const handleTagInputKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleAddTag()
     }
   }
 
@@ -157,10 +247,13 @@ function CadastroLivro() {
         isbn: "",
         capa_url: "",
         indice: "",
+        tags: "",
       })
       setSelectedFile(null)
       setPreviewUrl(null)
       setUploadProgress(0)
+      setTagsList([])
+      setTagInput("")
     } catch (error) {
       console.error("Erro ao cadastrar livro:", error)
       setSubmitMessage({
@@ -287,15 +380,26 @@ function CadastroLivro() {
           {/* Categoria e ISBN - Grid 2 colunas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label
-                htmlFor="categoria"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Categoria{" "}
-                <span className="text-gray-400 text-xs font-normal">
-                  (opcional)
-                </span>
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label
+                  htmlFor="categoria"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Categoria{" "}
+                  <span className="text-gray-400 text-xs font-normal">
+                    (opcional)
+                  </span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowCategoryModal(true)}
+                  className="text-primary-600 hover:text-primary-700 flex items-center gap-1 text-sm font-medium transition-colors"
+                  title="Gerenciar categorias"
+                >
+                  <Settings className="h-4 w-4" />
+                  Gerenciar
+                </button>
+              </div>
               <select
                 id="categoria"
                 name="categoria"
@@ -304,17 +408,9 @@ function CadastroLivro() {
                 className="w-full px-4 py-3 pr-10 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
               >
                 <option value="">Selecione uma categoria</option>
-                <option value="Espiritualidade">Espiritualidade</option>
-                <option value="Teologia">Teologia</option>
-                <option value="Catequese">Catequese</option>
-                <option value="Liturgia">Liturgia</option>
-                <option value="Mariologia">Mariologia</option>
-                <option value="Santos">Santos</option>
-                <option value="Bíblia">Bíblia</option>
-                <option value="História da Igreja">História da Igreja</option>
-                <option value="Doutrina Social">Doutrina Social</option>
-                <option value="Filosofia">Filosofia</option>
-                <option value="Outros">Outros</option>
+                {categorias.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
               </select>
             </div>
 
@@ -475,6 +571,60 @@ function CadastroLivro() {
               className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
             />
           </div>
+
+          {/* Tags */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Tags{" "}
+              <span className="text-gray-400 text-xs font-normal">
+                (opcional)
+              </span>
+            </label>
+            <p className="text-xs text-gray-500 mb-2">
+              Tags são palavras-chave personalizadas para ajudar você a organizar e encontrar seus livros.
+            </p>
+
+            {/* Chips das tags existentes */}
+            {tagsList.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {tagsList.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-100 text-primary-700 rounded-full text-sm font-medium"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTag(tag)}
+                      className="hover:text-primary-900 transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Input para adicionar nova tag */}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyPress={handleTagInputKeyPress}
+                placeholder="ex: leitura espiritual"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              />
+              <button
+                type="button"
+                onClick={handleAddTag}
+                className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-1"
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Barra de progresso */}
@@ -507,11 +657,14 @@ function CadastroLivro() {
                 isbn: "",
                 capa_url: "",
                 indice: "",
+                tags: "",
               })
               setSelectedFile(null)
               setPreviewUrl(null)
               setSubmitMessage({ type: "", text: "" })
               setUploadProgress(0)
+              setTagsList([])
+              setTagInput("")
             }}
             className="btn-secondary"
             disabled={isSubmitting}
@@ -535,6 +688,113 @@ function CadastroLivro() {
           <span className="text-red-500">*</span> são obrigatórios.
         </p>
       </div>
+
+      {/* Modal de Gerenciamento de Categorias */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-900">Gerenciar Categorias</h2>
+              <button
+                onClick={() => setShowCategoryModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6">
+              {/* Adicionar nova categoria */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Adicionar Nova Categoria
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={novaCategoria}
+                    onChange={(e) => setNovaCategoria(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAddCategoria()}
+                    placeholder="Nome da categoria"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  />
+                  <button
+                    onClick={handleAddCategoria}
+                    className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-1"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Adicionar
+                  </button>
+                </div>
+              </div>
+
+              {/* Lista de categorias */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Categorias Existentes ({categorias.length})
+                </label>
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {categorias.map((categoria) => (
+                    <div
+                      key={categoria}
+                      className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      {editingCategory === categoria ? (
+                        // Modo de edição
+                        <>
+                          <input
+                            type="text"
+                            value={editingCategoryValue}
+                            onChange={(e) => setEditingCategoryValue(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSaveEditCategoria()}
+                            className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            autoFocus
+                          />
+                          <button
+                            onClick={handleSaveEditCategoria}
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50 p-1.5 rounded transition-colors"
+                            title="Salvar"
+                          >
+                            <Check className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={handleCancelEditCategoria}
+                            className="text-gray-600 hover:text-gray-700 hover:bg-gray-200 p-1.5 rounded transition-colors"
+                            title="Cancelar"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </>
+                      ) : (
+                        // Modo de visualização
+                        <>
+                          <span className="flex-1 text-sm text-gray-900">{categoria}</span>
+                          <button
+                            onClick={() => handleStartEditCategoria(categoria)}
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1.5 rounded transition-colors"
+                            title="Editar categoria"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleRemoveCategoria(categoria)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1.5 rounded transition-colors"
+                            title="Remover categoria"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
