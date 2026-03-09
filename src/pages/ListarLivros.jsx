@@ -627,7 +627,7 @@ function ListarLivros() {
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
                     Categoria
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 w-24">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 min-w-[100px]">
                     Ano
                   </th>
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0">
@@ -1149,13 +1149,13 @@ function ListarLivros() {
                   ) : (
                     // Linha Normal
                     <tr key={livro.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-4">
-                        <div className="flex items-center">
+                      <td className="px-3 py-4 max-w-[250px] sm:max-w-xs">
+                        <div className="flex items-center gap-3">
                           {livro.cover_url && (
                             <img
                               src={livro.cover_url}
                               alt={livro.title}
-                              className="h-16 w-12 object-cover rounded mr-3 cursor-pointer hover:opacity-80 transition-opacity"
+                              className="h-12 w-9 sm:h-16 sm:w-12 object-cover rounded flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
                               onClick={() => {
                                 setImageModalContent({ titulo: livro.title, imageUrl: livro.cover_url });
                                 setShowImageModal(true);
@@ -1166,18 +1166,18 @@ function ListarLivros() {
                               title="Clique para ampliar"
                             />
                           )}
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 break-words min-w-0">
                             {livro.title}
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-4 text-sm text-gray-900">
+                      <td className="px-3 py-4 text-sm text-gray-900 max-w-[150px] break-words">
                         {livro.author}
                       </td>
-                      <td className="px-3 py-4 text-sm text-gray-500">
+                      <td className="px-3 py-4 text-sm text-gray-500 max-w-[150px] break-words">
                         {livro.publisher || '-'}
                       </td>
-                      <td className="px-3 py-4 text-sm text-gray-500">
+                      <td className="px-3 py-4 text-sm text-gray-500 max-w-[120px] break-words">
                         {livro.category || '-'}
                       </td>
                       <td className="px-3 py-4 text-sm text-gray-500">
