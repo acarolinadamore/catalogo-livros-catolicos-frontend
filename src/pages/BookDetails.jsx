@@ -100,7 +100,7 @@ function BookDetails() {
         <div className="lg:col-span-8">
           {/* Categoria */}
           {book.content_type && (
-            <span className="category-badge text-xs mb-4 inline-block w-auto">
+            <span className="category-badge mb-4">
               {book.content_type}
             </span>
           )}
@@ -124,7 +124,8 @@ function BookDetails() {
                 {book.tags.split(',').map((tag, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center px-2.5 py-0.5 bg-blue-50 text-blue-400 rounded-full text-xs font-medium"
+                    className="inline-flex items-center px-2.5 py-0.5 bg-blue-50 rounded-full text-xs font-medium"
+                    style={{ color: '#5A89B4' }}
                   >
                     {tag.trim()}
                   </span>

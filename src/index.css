@@ -58,7 +58,8 @@
   /* Badge de categoria */
   .category-badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-    @apply bg-primary-100 text-primary-800;
+    @apply bg-primary-100;
+    color: #1A5F9E;
   }
 }
 
