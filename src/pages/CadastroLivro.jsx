@@ -590,13 +590,13 @@ function CadastroLivro() {
                 {tagsList.map((tag, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-sm font-medium"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-sm font-medium"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
-                      className="hover:text-gray-700 transition-colors"
+                      className="hover:text-blue-700 transition-colors"
                     >
                       <X className="h-4 w-4" />
                     </button>

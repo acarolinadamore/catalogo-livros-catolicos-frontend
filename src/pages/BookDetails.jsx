@@ -136,7 +136,7 @@ function BookDetails() {
                 {book.tags.split(',').map((tag, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center px-2.5 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium"
+                    className="inline-flex items-center px-2.5 py-0.5 bg-blue-50 text-blue-600 rounded-full text-xs font-medium"
                   >
                     {tag.trim()}
                   </span>
