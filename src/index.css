@@ -60,6 +60,8 @@
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
     @apply bg-primary-100;
     color: #1A5F9E;
+    width: fit-content;
+    max-width: fit-content;
   }
 }
 
