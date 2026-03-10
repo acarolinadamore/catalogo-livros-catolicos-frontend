@@ -90,10 +90,24 @@ function CadastroLivro() {
 
       setOcrProgress(80)
 
-      const data = await response.json()
+      // Verificar se a resposta é JSON válido
+      let data
+      try {
+        data = await response.json()
+      } catch (jsonError) {
+        console.error('Erro ao parsear resposta:', jsonError)
+        throw new Error('O servidor retornou uma resposta inválida')
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erro ao processar imagem')
+        // Erros específicos por status HTTP
+        if (response.status === 404) {
+          throw new Error('⚠️ Funcionalidade de OCR ainda não está disponível. O servidor está atualizando, aguarde alguns minutos.')
+        } else if (response.status === 500) {
+          throw new Error(data.error || 'Erro no servidor ao processar a imagem')
+        } else {
+          throw new Error(data.error || 'Erro ao processar imagem')
+        }
       }
 
       if (data.success && data.data) {
@@ -114,7 +128,15 @@ function CadastroLivro() {
 
     } catch (error) {
       console.error('Erro ao processar OCR:', error)
-      setOcrError("Erro ao analisar a imagem. Verifique se o servidor está rodando e tente novamente.")
+
+      // Mensagens de erro específicas
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        setOcrError("❌ Não foi possível conectar ao servidor. Verifique sua conexão com a internet.")
+      } else if (error.message.includes('ainda não está disponível') || error.message.includes('atualizando')) {
+        setOcrError(error.message)
+      } else {
+        setOcrError(error.message || "Erro ao analisar a imagem. Tente novamente.")
+      }
       setOcrProgress(0)
     } finally {
       setIsProcessingOCR(false)
@@ -644,7 +666,7 @@ function CadastroLivro() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Camera className="h-5 w-5 text-primary-600" />
-                  <label htmlFor="capa_file" className="text-sm font-medium text-gray-700">
+                  <label className="text-sm font-medium text-gray-700">
                     Tire uma foto ou escolha um arquivo
                   </label>
                 </div>
@@ -668,15 +690,37 @@ function CadastroLivro() {
                   </ul>
                 </div>
 
-                <input
-                  type="file"
-                  id="capa_file"
-                  accept="image/jpeg,image/jpg,image/png"
-                  capture="environment"
-                  onChange={handleFileChange}
-                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
-                />
-                <p className="mt-1 text-sm text-gray-500">
+                {/* Botões separados para Câmera e Galeria */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                  {/* Botão Tirar Foto */}
+                  <label className="flex items-center justify-center gap-2 px-4 py-3 bg-primary-50 hover:bg-primary-100 text-primary-700 font-medium rounded-lg border-2 border-primary-300 cursor-pointer transition-all duration-200 active:scale-95">
+                    <Camera className="h-5 w-5" />
+                    <span>Tirar Foto</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png"
+                      capture="environment"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </label>
+
+                  {/* Botão Escolher da Galeria */}
+                  <label className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium rounded-lg border-2 border-blue-300 cursor-pointer transition-all duration-200 active:scale-95">
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>Escolher da Galeria</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
+                <p className="text-sm text-gray-500">
                   JPG ou PNG. Máximo 5MB. A capa será analisada automaticamente para preencher os campos.
                 </p>
 
