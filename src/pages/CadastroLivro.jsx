@@ -653,8 +653,8 @@ function CadastroLivro() {
 
             {/* Dicas para melhor OCR */}
             <div className="mb-4 p-3 bg-white rounded-lg border border-blue-200">
-              <p className="text-xs font-medium text-blue-900 mb-1 flex items-center gap-1">
-                <span className="text-sm">🤖</span> Análise inteligente com Claude AI
+              <p className="text-xs font-medium text-blue-900 mb-1">
+                Análise inteligente com Claude AI
               </p>
               <p className="text-xs text-blue-700 mb-2">
                 A foto selecionada como capa será analisada automaticamente para extrair título, autor, editora e ano.
@@ -935,113 +935,49 @@ function CadastroLivro() {
             </div>
           </div>
 
-          {/* Categoria e ISBN - Grid 2 colunas */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="min-w-0">
-              <div className="flex items-center justify-between mb-2 gap-2">
-                <label
-                  htmlFor="categoria"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Categoria{" "}
-                  <span className="text-gray-400 text-xs font-normal">
-                    (opcional)
-                  </span>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setShowCategoryModal(true)}
-                  className="text-primary-600 hover:text-primary-700 flex items-center gap-1 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
-                  title="Gerenciar categorias"
-                >
-                  <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="hidden xs:inline">Gerenciar</span>
-                  <span className="xs:hidden">Editar</span>
-                </button>
-              </div>
-              <select
-                id="categoria"
-                name="categoria"
-                value={formData.categoria}
-                onChange={handleChange}
-                className="w-full px-3 py-2.5 sm:px-4 sm:py-3 pr-8 sm:pr-10 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 text-sm sm:text-base bg-white appearance-none min-h-[42px]"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                  backgroundPosition: 'right 0.5rem center',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundSize: '1.5em 1.5em'
-                }}
-              >
-                <option value="">Selecione uma categoria</option>
-                {categorias.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="min-w-0">
+          {/* Categoria */}
+          <div>
+            <div className="flex items-center justify-between mb-2 gap-2">
               <label
-                htmlFor="isbn"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                htmlFor="categoria"
+                className="block text-sm font-medium text-gray-700"
               >
-                ISBN{" "}
+                Categoria{" "}
                 <span className="text-gray-400 text-xs font-normal">
                   (opcional)
                 </span>
               </label>
-              <input
-                type="text"
-                id="isbn"
-                name="isbn"
-                value={formData.isbn}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
-              />
+              <button
+                type="button"
+                onClick={() => setShowCategoryModal(true)}
+                className="text-primary-600 hover:text-primary-700 flex items-center gap-1 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
+                title="Gerenciar categorias"
+              >
+                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Gerenciar</span>
+                <span className="xs:hidden">Editar</span>
+              </button>
             </div>
-          </div>
-
-
-          {/* Descrição */}
-          <div>
-            <label
-              htmlFor="descricao"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Descrição{" "}
-              <span className="text-gray-400 text-xs font-normal">
-                (opcional)
-              </span>
-            </label>
-            <textarea
-              id="descricao"
-              name="descricao"
-              value={formData.descricao}
+            <select
+              id="categoria"
+              name="categoria"
+              value={formData.categoria}
               onChange={handleChange}
-              rows="5"
-              className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
-            />
+              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 pr-8 sm:pr-10 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 text-sm sm:text-base bg-white appearance-none min-h-[42px]"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                backgroundPosition: 'right 0.5rem center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '1.5em 1.5em'
+              }}
+            >
+              <option value="">Selecione uma categoria</option>
+              {categorias.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
           </div>
 
-          {/* Índice */}
-          <div>
-            <label
-              htmlFor="indice"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Índice{" "}
-              <span className="text-gray-400 text-xs font-normal">
-                (opcional)
-              </span>
-            </label>
-            <textarea
-              id="indice"
-              name="indice"
-              value={formData.indice}
-              onChange={handleChange}
-              rows="8"
-              className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
-            />
-          </div>
 
           {/* Fotos do Índice - Upload múltiplo com OCR */}
           <div className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6">
@@ -1050,7 +986,7 @@ function CadastroLivro() {
               <span className="text-gray-400 text-sm font-normal">(opcional)</span>
             </label>
             <p className="text-sm text-gray-700 mb-4">
-              Tire fotos das páginas do índice do livro. O texto será extraído automaticamente e adicionado ao campo acima.
+              Tire fotos das páginas do índice do livro. O texto será extraído automaticamente e adicionado ao campo abaixo.
             </p>
 
             {/* Botões de upload */}
@@ -1103,7 +1039,6 @@ function CadastroLivro() {
                       </>
                     ) : (
                       <>
-                        <span className="text-lg">🤖</span>
                         Extrair Texto
                       </>
                     )}
@@ -1204,6 +1139,48 @@ function CadastroLivro() {
                 </p>
               </div>
             )}
+          </div>
+
+          {/* Índice */}
+          <div>
+            <label
+              htmlFor="indice"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Índice{" "}
+              <span className="text-gray-400 text-xs font-normal">
+                (opcional)
+              </span>
+            </label>
+            <textarea
+              id="indice"
+              name="indice"
+              value={formData.indice}
+              onChange={handleChange}
+              rows="8"
+              className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
+            />
+          </div>
+
+          {/* Descrição */}
+          <div>
+            <label
+              htmlFor="descricao"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Descrição{" "}
+              <span className="text-gray-400 text-xs font-normal">
+                (opcional)
+              </span>
+            </label>
+            <textarea
+              id="descricao"
+              name="descricao"
+              value={formData.descricao}
+              onChange={handleChange}
+              rows="5"
+              className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
+            />
           </div>
 
           {/* Tags */}
@@ -1340,24 +1317,24 @@ function CadastroLivro() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">Gerenciar Categorias</h2>
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Gerenciar Categorias</h2>
               <button
                 onClick={() => setShowCategoryModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <X className="h-6 w-6" />
+                <X className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
             </div>
 
             {/* Body */}
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               {/* Adicionar nova categoria */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Adicionar Nova Categoria
                 </label>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="text"
                     value={novaCategoria}
@@ -1368,10 +1345,10 @@ function CadastroLivro() {
                   />
                   <button
                     onClick={handleAddCategoria}
-                    className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-1"
+                    className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-1 w-full sm:w-auto"
                   >
                     <Plus className="h-4 w-4" />
-                    Adicionar
+                    <span>Adicionar</span>
                   </button>
                 </div>
               </div>

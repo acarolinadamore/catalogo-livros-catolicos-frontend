@@ -31,7 +31,6 @@ function ListarLivros() {
     ano: '',
     categoria: '',
     descricao: '',
-    isbn: '',
     capa_url: '',
     indice: '',
     tags: ''
@@ -227,7 +226,6 @@ function ListarLivros() {
       ano: livro.publication_year || '',
       categoria: livro.category || '',
       descricao: livro.description || '',
-      isbn: livro.isbn || '',
       capa_url: capaUrl,
       indice: livro.index_text || '',
       tags: livro.tags || ''
@@ -265,7 +263,6 @@ function ListarLivros() {
       ano: '',
       categoria: '',
       descricao: '',
-      isbn: '',
       capa_url: '',
       indice: '',
       tags: ''
@@ -928,18 +925,6 @@ function ListarLivros() {
                                   <Settings className="h-5 w-5" />
                                 </button>
                               </div>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                ISBN <span className="text-gray-400 text-xs font-normal">(opcional)</span>
-                              </label>
-                              <input
-                                type="text"
-                                name="isbn"
-                                value={formData.isbn}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                              />
                             </div>
 
                             {/* Capa do Livro */}
