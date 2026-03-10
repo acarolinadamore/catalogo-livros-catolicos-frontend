@@ -322,7 +322,7 @@ function CadastroLivro() {
     })
   }
 
-  // OCR para fotos do índice
+  // OCR para fotos do índice - TRANSCRIÇÃO LITERAL
   const processIndexOCR = async () => {
     if (indexPhotos.length === 0) return
 
@@ -341,25 +341,19 @@ function CadastroLivro() {
         const formData = new FormData()
         formData.append('image', photo.file)
 
-        const response = await fetch(`${API_BASE_URL}/ocr/analyze-cover`, {
+        // Usar endpoint de TRANSCRIÇÃO ao invés de análise
+        const response = await fetch(`${API_BASE_URL}/ocr/transcribe-index`, {
           method: 'POST',
           body: formData
         })
 
         const data = await response.json()
 
-        if (data.success && data.data) {
-          // Extrair todo o texto retornado pelo OCR
-          const extractedText = [
-            data.data.titulo,
-            data.data.autor,
-            data.data.editora,
-            data.data.ano
-          ].filter(Boolean).join(' ')
-
+        if (data.success && data.data && data.data.text) {
+          // Texto transcrito literalmente
           processedPhotos.push({
             ...photo,
-            text: extractedText
+            text: data.data.text
           })
         } else {
           processedPhotos.push({
@@ -372,10 +366,11 @@ function CadastroLivro() {
       setIndexPhotos(processedPhotos)
 
       // Atualizar textarea do índice automaticamente
+      // Juntar textos com linha em branco entre páginas para separação visual
       const fullIndexText = processedPhotos
         .sort((a, b) => a.order - b.order)
         .map(p => p.text)
-        .join('\n')
+        .join('\n\n')
 
       setFormData(prev => ({
         ...prev,
