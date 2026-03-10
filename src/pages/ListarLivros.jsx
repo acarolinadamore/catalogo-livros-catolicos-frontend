@@ -1270,24 +1270,24 @@ function ListarLivros() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
               {/* Header */}
-              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-900">Gerenciar Categorias</h2>
+              <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Gerenciar Categorias</h2>
                 <button
                   onClick={() => setShowCategoryModal(false)}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-5 w-5 sm:h-6 sm:w-6" />
                 </button>
               </div>
 
               {/* Body */}
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {/* Adicionar nova categoria */}
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Adicionar Nova Categoria
                   </label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       value={novaCategoria}
@@ -1298,7 +1298,7 @@ function ListarLivros() {
                     />
                     <button
                       onClick={handleAddCategoria}
-                      className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-1"
+                      className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-1 w-full sm:w-auto"
                     >
                       <Plus className="h-4 w-4" />
                       Adicionar
