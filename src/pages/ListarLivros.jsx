@@ -847,59 +847,6 @@ function ListarLivros() {
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Título <span className="text-red-500">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                name="titulo"
-                                value={formData.titulo}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Autor <span className="text-red-500">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                name="autor"
-                                value={formData.autor}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Editora <span className="text-gray-400 text-xs font-normal">(opcional)</span>
-                              </label>
-                              <input
-                                type="text"
-                                name="editora"
-                                value={formData.editora}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Ano <span className="text-gray-400 text-xs font-normal">(opcional)</span>
-                              </label>
-                              <input
-                                type="number"
-                                name="ano"
-                                value={formData.ano}
-                                onChange={handleChange}
-                                min="1000"
-                                max="2100"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                              />
-                            </div>
-
                             {/* Capa do Livro */}
                             <div className="md:col-span-2">
                               <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -1035,6 +982,59 @@ function ListarLivros() {
                                   )}
                                 </div>
                               )}
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Título <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                name="titulo"
+                                value={formData.titulo}
+                                onChange={handleChange}
+                                required
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Autor <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                name="autor"
+                                value={formData.autor}
+                                onChange={handleChange}
+                                required
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Editora <span className="text-gray-400 text-xs font-normal">(opcional)</span>
+                              </label>
+                              <input
+                                type="text"
+                                name="editora"
+                                value={formData.editora}
+                                onChange={handleChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Ano <span className="text-gray-400 text-xs font-normal">(opcional)</span>
+                              </label>
+                              <input
+                                type="number"
+                                name="ano"
+                                value={formData.ano}
+                                onChange={handleChange}
+                                min="1000"
+                                max="2100"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                              />
                             </div>
 
                             <div className="md:col-span-2">
