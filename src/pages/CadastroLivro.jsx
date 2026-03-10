@@ -930,104 +930,6 @@ function CadastroLivro() {
             </div>
           </div>
 
-          {/* Categoria */}
-          <div>
-            <div className="flex items-center justify-between mb-2 gap-2">
-              <label
-                htmlFor="categoria"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Categoria{" "}
-                <span className="text-gray-400 text-xs font-normal">
-                  (opcional)
-                </span>
-              </label>
-              <button
-                type="button"
-                onClick={() => setShowCategoryModal(true)}
-                className="text-primary-600 hover:text-primary-700 flex items-center gap-1 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
-                title="Gerenciar categorias"
-              >
-                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden xs:inline">Gerenciar</span>
-                <span className="xs:hidden">Editar</span>
-              </button>
-            </div>
-            <select
-              id="categoria"
-              name="categoria"
-              value={formData.categoria}
-              onChange={handleChange}
-              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 pr-8 sm:pr-10 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 text-sm sm:text-base bg-white appearance-none min-h-[42px]"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                backgroundPosition: 'right 0.5rem center',
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: '1.5em 1.5em'
-              }}
-            >
-              <option value="">Selecione uma categoria</option>
-              {categorias.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Tags */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tags{" "}
-              <span className="text-gray-400 text-xs font-normal">
-                (opcional)
-              </span>
-            </label>
-            <p className="text-xs text-gray-500 mb-2">
-              Tags são palavras-chave personalizadas para ajudar você a organizar e encontrar seus livros.
-            </p>
-
-            {/* Chips das tags existentes */}
-            {tagsList.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3">
-                {tagsList.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium border"
-                    style={{ color: '#5A89B4', borderColor: '#5A89B4' }}
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTag(tag)}
-                      className="hover:opacity-80 transition-opacity"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* Input para adicionar nova tag */}
-            <div className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="text"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={handleTagInputKeyPress}
-                placeholder="ex: leitura espiritual"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-              <button
-                type="button"
-                onClick={handleAddTag}
-                className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-1 w-full sm:w-auto"
-              >
-                <Plus className="h-4 w-4" />
-                Adicionar
-              </button>
-            </div>
-          </div>
-
           {/* Fotos do Índice - Upload múltiplo com OCR */}
           <div className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6">
             <label className="block text-lg font-semibold text-gray-900 mb-3">
@@ -1230,6 +1132,104 @@ function CadastroLivro() {
               rows="5"
               className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
             />
+          </div>
+
+          {/* Categoria */}
+          <div>
+            <div className="flex items-center justify-between mb-2 gap-2">
+              <label
+                htmlFor="categoria"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Categoria{" "}
+                <span className="text-gray-400 text-xs font-normal">
+                  (opcional)
+                </span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowCategoryModal(true)}
+                className="text-primary-600 hover:text-primary-700 flex items-center gap-1 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
+                title="Gerenciar categorias"
+              >
+                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Gerenciar</span>
+                <span className="xs:hidden">Editar</span>
+              </button>
+            </div>
+            <select
+              id="categoria"
+              name="categoria"
+              value={formData.categoria}
+              onChange={handleChange}
+              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 pr-8 sm:pr-10 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 text-sm sm:text-base bg-white appearance-none min-h-[42px]"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                backgroundPosition: 'right 0.5rem center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '1.5em 1.5em'
+              }}
+            >
+              <option value="">Selecione uma categoria</option>
+              {categorias.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Tags */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Tags{" "}
+              <span className="text-gray-400 text-xs font-normal">
+                (opcional)
+              </span>
+            </label>
+            <p className="text-xs text-gray-500 mb-2">
+              Tags são palavras-chave personalizadas para ajudar você a organizar e encontrar seus livros.
+            </p>
+
+            {/* Chips das tags existentes */}
+            {tagsList.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {tagsList.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium border"
+                    style={{ color: '#5A89B4', borderColor: '#5A89B4' }}
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTag(tag)}
+                      className="hover:opacity-80 transition-opacity"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Input para adicionar nova tag */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyPress={handleTagInputKeyPress}
+                placeholder="ex: leitura espiritual"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              />
+              <button
+                type="button"
+                onClick={handleAddTag}
+                className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-1 w-full sm:w-auto"
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar
+              </button>
+            </div>
           </div>
         </div>
 
