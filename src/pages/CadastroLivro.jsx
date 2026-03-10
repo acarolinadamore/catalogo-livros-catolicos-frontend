@@ -66,220 +66,55 @@ function CadastroLivro() {
     }))
   }
 
-  // Função auxiliar para extrair informações do texto OCR
-  const extractBookInfo = (text) => {
-    if (!text) return null
-
-    // Limpar texto: remover caracteres especiais e normalizar espaços
-    const cleanedText = text.replace(/[^\w\sçãõáéíóúâêîôûàèìòùäëïöü]/gi, ' ')
-    const lines = cleanedText.split('\n')
-      .map(line => line.trim())
-      .filter(line => line.length > 2)
-
-    console.log('Linhas processadas:', lines)
-
-    let titulo = ''
-    let autor = ''
-    let ano = ''
-    let editora = ''
-
-    // Encontrar título: Priorizar linhas com mais de 10 caracteres e que estejam no topo
-    const titleCandidates = lines
-      .slice(0, Math.min(5, lines.length)) // Olhar apenas as primeiras 5 linhas
-      .filter(line => line.length >= 10)
-      .filter(line => {
-        // Filtrar linhas que parecem ser títulos (mais caracteres maiúsculos ou palavras capitalizadas)
-        const upperCount = (line.match(/[A-ZÇÃÕÁÉÍÓÚÂÊÎÔÛ]/g) || []).length
-        return upperCount >= 3 || /^[A-ZÇÃÕÁÉÍÓÚÂÊÎÔÛ]/.test(line)
-      })
-
-    if (titleCandidates.length > 0) {
-      // Pegar a linha mais longa entre os candidatos
-      titulo = titleCandidates.sort((a, b) => b.length - a.length)[0].trim()
-    } else if (lines.length > 0) {
-      // Se não encontrou nada, pegar a primeira linha
-      titulo = lines[0].trim()
-    }
-
-    // Procurar por autor - padrões mais flexíveis
-    const authorPatterns = [
-      /(?:por|de|author|autor|escrito\s+por)\s*[:\-]?\s*([a-zçãõáéíóúâêîôû\s]+)/i,
-      /\b([A-ZÇÃÕÁÉÍÓÚ][a-zçãõáéíóúâêîôû]+(?:\s+[A-ZÇÃÕÁÉÍÓÚ][a-zçãõáéíóúâêîôû]+){1,4})\b/
-    ]
-
-    for (const line of lines) {
-      // Pular se for muito curto ou se já for o título
-      if (line.length < 5 || line === titulo) continue
-
-      for (const pattern of authorPatterns) {
-        const match = line.match(pattern)
-        if (match) {
-          let candidate = match[1] || match[0]
-          candidate = candidate.replace(/^(por|de|autor|author|escrito\s+por)[:\-\s]*/i, '').trim()
-
-          // Validar: deve ter pelo menos 2 palavras e começar com maiúscula
-          const words = candidate.split(/\s+/)
-          if (words.length >= 2 && /^[A-ZÇÃÕÁÉÍÓÚ]/.test(candidate)) {
-            autor = candidate
-            break
-          }
-        }
-      }
-      if (autor) break
-    }
-
-    // Procurar ano - mais flexível (1500-2100)
-    const yearPattern = /(1[5-9]\d{2}|20\d{2}|21\d{2})/
-    for (const line of lines) {
-      const match = line.match(yearPattern)
-      if (match) {
-        const year = parseInt(match[1])
-        // Validar ano razoável
-        if (year >= 1500 && year <= new Date().getFullYear() + 5) {
-          ano = match[1]
-          break
-        }
-      }
-    }
-
-    // Procurar editora - padrões mais amplos
-    const publisherPatterns = [
-      /(?:editora|editor|ed|publicado\s+por)\s*[:\-]?\s*([a-zçãõáéíóúâêîôû\s]+)/i,
-      /\b([A-ZÇÃÕÁÉÍÓÚ][a-zçãõáéíóúâêîôû]+)\s+(?:editora|editor|publicacoes|livros|books)\b/i,
-      /\b(?:editora|editor)\s+([A-ZÇÃÕÁÉÍÓÚ][a-zçãõáéíóúâêîôû]+(?:\s+[A-ZÇÃÕÁÉÍÓÚ][a-zçãõáéíóúâêîôû]+)*)/i
-    ]
-
-    for (const line of lines) {
-      if (line.length < 5 || line === titulo || line === autor) continue
-
-      for (const pattern of publisherPatterns) {
-        const match = line.match(pattern)
-        if (match) {
-          let candidate = match[1] || match[0]
-          candidate = candidate.replace(/^(editora|editor|ed|publicado\s+por)[:\-\s]*/i, '').trim()
-          candidate = candidate.replace(/\s+(editora|editor|publicacoes|livros|books)$/i, '').trim()
-
-          if (candidate.length >= 3) {
-            editora = candidate
-            break
-          }
-        }
-      }
-      if (editora) break
-    }
-
-    console.log('Informações extraídas:', { titulo, autor, ano, editora })
-
-    return { titulo, autor, ano, editora }
-  }
-
-  // Função para pré-processar a imagem e melhorar a precisão do OCR
-  const preprocessImage = (imageFile) => {
-    return new Promise((resolve) => {
-      const img = new Image()
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-
-      img.onload = () => {
-        // Redimensionar se muito grande (max 2000px de largura)
-        let width = img.width
-        let height = img.height
-        const maxWidth = 2000
-
-        if (width > maxWidth) {
-          height = (height * maxWidth) / width
-          width = maxWidth
-        }
-
-        canvas.width = width
-        canvas.height = height
-
-        // Desenhar imagem
-        ctx.drawImage(img, 0, 0, width, height)
-
-        // Aumentar contraste e nitidez
-        const imageData = ctx.getImageData(0, 0, width, height)
-        const data = imageData.data
-
-        // Converter para escala de cinza e aumentar contraste
-        for (let i = 0; i < data.length; i += 4) {
-          // Escala de cinza
-          const avg = (data[i] + data[i + 1] + data[i + 2]) / 3
-
-          // Aumentar contraste (fator de contraste = 1.5)
-          const factor = 1.5
-          let value = ((avg - 128) * factor) + 128
-
-          // Limitar entre 0-255
-          value = Math.max(0, Math.min(255, value))
-
-          data[i] = value     // R
-          data[i + 1] = value // G
-          data[i + 2] = value // B
-        }
-
-        ctx.putImageData(imageData, 0, 0)
-
-        // Converter canvas para blob
-        canvas.toBlob((blob) => {
-          resolve(blob)
-        }, 'image/png')
-      }
-
-      img.src = URL.createObjectURL(imageFile)
-    })
-  }
-
-  // Função para processar OCR na imagem
+  // Função para processar OCR na imagem usando Claude API
   const processImageOCR = async (imageFile) => {
     try {
       setIsProcessingOCR(true)
-      setOcrProgress(0)
+      setOcrProgress(20)
       setOcrError("")
       setOcrSuggestions(null)
 
-      // Pré-processar a imagem para melhorar precisão
-      const processedImage = await preprocessImage(imageFile)
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
-      // Importar Tesseract dinamicamente
-      const { createWorker } = await import('tesseract.js')
+      // Criar FormData para enviar a imagem
+      const formData = new FormData()
+      formData.append('image', imageFile)
 
-      // Usar português e inglês para melhor detecção
-      const worker = await createWorker(['por', 'eng'], 1, {
-        logger: (m) => {
-          // Atualizar progresso baseado no status do Tesseract
-          if (m.status === 'recognizing text') {
-            setOcrProgress(Math.round(m.progress * 100))
-          }
+      setOcrProgress(40)
+
+      // Enviar para API do backend
+      const response = await fetch(`${API_BASE_URL}/ocr/analyze-cover`, {
+        method: 'POST',
+        body: formData
+      })
+
+      setOcrProgress(80)
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao processar imagem')
+      }
+
+      if (data.success && data.data) {
+        console.log('Informações extraídas pela API:', data.data)
+
+        // Verificar se encontrou pelo menos título ou autor
+        if (data.data.titulo || data.data.autor) {
+          setOcrSuggestions(data.data)
+          setOcrProgress(100)
+        } else {
+          setOcrError("Não consegui identificar informações do livro na capa. Tente tirar uma foto mais nítida, com boa iluminação e sem reflexos.")
+          setOcrProgress(0)
         }
-      })
-
-      // Configurar parâmetros do Tesseract para melhor precisão
-      await worker.setParameters({
-        tessedit_pageseg_mode: '1', // Automatic page segmentation with OSD (Orientation and Script Detection)
-        preserve_interword_spaces: '1',
-      })
-
-      // Processar a imagem pré-processada
-      const { data: { text } } = await worker.recognize(processedImage)
-      await worker.terminate()
-
-      console.log('Texto extraído do OCR:', text)
-
-      // Extrair informações do texto
-      const bookInfo = extractBookInfo(text)
-
-      if (bookInfo && (bookInfo.titulo || bookInfo.autor)) {
-        setOcrSuggestions(bookInfo)
-        setOcrProgress(100)
       } else {
-        setOcrError("Não consegui identificar informações do livro na capa. Tente tirar uma foto mais nítida, com boa iluminação e sem reflexos.")
+        setOcrError(data.error || "Não consegui identificar informações do livro na capa. Tente tirar uma foto mais nítida.")
         setOcrProgress(0)
       }
 
     } catch (error) {
       console.error('Erro ao processar OCR:', error)
-      setOcrError("Erro ao analisar a imagem. Por favor, preencha manualmente.")
+      setOcrError("Erro ao analisar a imagem. Verifique se o servidor está rodando e tente novamente.")
       setOcrProgress(0)
     } finally {
       setIsProcessingOCR(false)
@@ -815,9 +650,15 @@ function CadastroLivro() {
                 </div>
 
                 {/* Dicas para melhor OCR */}
-                <div className="mb-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="mb-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                  <p className="text-xs font-medium text-blue-900 mb-1 flex items-center gap-1">
+                    <span className="text-sm">🤖</span> Análise inteligente com Claude AI
+                  </p>
+                  <p className="text-xs text-blue-700 mb-2">
+                    A capa será analisada automaticamente para extrair título, autor, editora e ano.
+                  </p>
                   <p className="text-xs font-medium text-blue-800 mb-1">
-                    💡 Dicas para melhor leitura automática:
+                    💡 Dicas para melhor resultado:
                   </p>
                   <ul className="text-xs text-blue-700 space-y-0.5 ml-4 list-disc">
                     <li>Tire a foto com boa iluminação</li>
@@ -865,7 +706,7 @@ function CadastroLivro() {
                             <div className="flex items-center gap-3 mb-2">
                               <Loader className="h-5 w-5 text-primary-600 animate-spin" />
                               <p className="text-sm font-medium text-gray-800">
-                                Analisando a capa do livro...
+                                Claude AI está analisando a capa...
                               </p>
                             </div>
                             {ocrProgress > 0 && (
@@ -877,7 +718,7 @@ function CadastroLivro() {
                               </div>
                             )}
                             <p className="text-xs text-gray-600 mt-1">
-                              Isso pode levar alguns segundos...
+                              Usando IA avançada para identificar título, autor e mais...
                             </p>
                           </div>
                         )}
