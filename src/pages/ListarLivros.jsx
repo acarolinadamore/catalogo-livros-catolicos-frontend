@@ -830,7 +830,7 @@ function ListarLivros() {
                       <td colSpan="8" className="px-6 py-4">
                         <form onSubmit={handleSaveEdit} className="space-y-4">
                           {/* Botões de ação no topo */}
-                          <div className="flex gap-2 justify-end pb-4 border-b border-gray-300">
+                          <div className="flex gap-2 justify-start md:justify-end pb-4 border-b border-gray-300">
                             <button
                               type="button"
                               onClick={handleCancelEdit}
