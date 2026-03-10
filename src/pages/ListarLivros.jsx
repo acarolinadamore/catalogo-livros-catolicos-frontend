@@ -899,85 +899,6 @@ function ListarLivros() {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                               />
                             </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Categoria <span className="text-gray-400 text-xs font-normal">(opcional)</span>
-                              </label>
-                              <div className="flex gap-2">
-                                <select
-                                  name="categoria"
-                                  value={formData.categoria}
-                                  onChange={handleChange}
-                                  className="flex-1 px-3 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
-                                  style={{ backgroundPosition: 'right 0.75rem center' }}
-                                >
-                                  <option value="">Selecione uma categoria</option>
-                                  {categorias.map(cat => (
-                                    <option key={cat} value={cat}>{cat}</option>
-                                  ))}
-                                </select>
-                                <button
-                                  type="button"
-                                  onClick={() => setShowCategoryModal(true)}
-                                  className="p-2 text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors border border-gray-300"
-                                  title="Gerenciar categorias"
-                                >
-                                  <Settings className="h-5 w-5" />
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Tags */}
-                            <div className="md:col-span-2">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Tags <span className="text-gray-400 text-xs font-normal">(opcional)</span>
-                              </label>
-                              <p className="text-xs text-gray-500 mb-2">
-                                Tags são palavras-chave personalizadas para ajudar você a organizar e encontrar seus livros.
-                              </p>
-
-                              {/* Chips das tags existentes */}
-                              {tagsList.length > 0 && (
-                                <div className="flex flex-wrap gap-2 mb-3">
-                                  {tagsList.map((tag, index) => (
-                                    <span
-                                      key={index}
-                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium border"
-                                      style={{ color: '#5A89B4', borderColor: '#5A89B4' }}
-                                    >
-                                      {tag}
-                                      <button
-                                        type="button"
-                                        onClick={() => handleRemoveTag(tag)}
-                                        className="hover:opacity-80 transition-opacity"
-                                      >
-                                        <X className="h-4 w-4" />
-                                      </button>
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-
-                              {/* Input para adicionar nova tag */}
-                              <div className="flex gap-2">
-                                <input
-                                  type="text"
-                                  value={tagInput}
-                                  onChange={(e) => setTagInput(e.target.value)}
-                                  onKeyPress={handleTagInputKeyPress}
-                                  placeholder="ex: leitura espiritual"
-                                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={handleAddTag}
-                                  className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-1"
-                                >
-                                  <Plus className="h-4 w-4" />
-                                  Adicionar
-                                </button>
-                              </div>
-                            </div>
 
                             {/* Capa do Livro */}
                             <div className="md:col-span-2">
@@ -1140,6 +1061,87 @@ function ListarLivros() {
                                 rows="3"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                               />
+                            </div>
+
+                            {/* Categoria */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Categoria <span className="text-gray-400 text-xs font-normal">(opcional)</span>
+                              </label>
+                              <div className="flex gap-2">
+                                <select
+                                  name="categoria"
+                                  value={formData.categoria}
+                                  onChange={handleChange}
+                                  className="flex-1 px-3 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                                  style={{ backgroundPosition: 'right 0.75rem center' }}
+                                >
+                                  <option value="">Selecione uma categoria</option>
+                                  {categorias.map(cat => (
+                                    <option key={cat} value={cat}>{cat}</option>
+                                  ))}
+                                </select>
+                                <button
+                                  type="button"
+                                  onClick={() => setShowCategoryModal(true)}
+                                  className="p-2 text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors border border-gray-300"
+                                  title="Gerenciar categorias"
+                                >
+                                  <Settings className="h-5 w-5" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Tags */}
+                            <div className="md:col-span-2">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Tags <span className="text-gray-400 text-xs font-normal">(opcional)</span>
+                              </label>
+                              <p className="text-xs text-gray-500 mb-2">
+                                Tags são palavras-chave personalizadas para ajudar você a organizar e encontrar seus livros.
+                              </p>
+
+                              {/* Chips das tags existentes */}
+                              {tagsList.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-3">
+                                  {tagsList.map((tag, index) => (
+                                    <span
+                                      key={index}
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium border"
+                                      style={{ color: '#5A89B4', borderColor: '#5A89B4' }}
+                                    >
+                                      {tag}
+                                      <button
+                                        type="button"
+                                        onClick={() => handleRemoveTag(tag)}
+                                        className="hover:opacity-80 transition-opacity"
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </button>
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* Input para adicionar nova tag */}
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={tagInput}
+                                  onChange={(e) => setTagInput(e.target.value)}
+                                  onKeyPress={handleTagInputKeyPress}
+                                  placeholder="ex: leitura espiritual"
+                                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={handleAddTag}
+                                  className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-1"
+                                >
+                                  <Plus className="h-4 w-4" />
+                                  Adicionar
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </form>
