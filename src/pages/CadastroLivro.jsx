@@ -29,6 +29,15 @@ function CadastroLivro() {
   const [submitMessage, setSubmitMessage] = useState({ type: "", text: "" })
   const [uploadProgress, setUploadProgress] = useState(0)
 
+  // Estados para múltiplas fotos do livro
+  const [bookPhotos, setBookPhotos] = useState([]) // Array de {file, preview, id}
+  const [coverPhotoIndex, setCoverPhotoIndex] = useState(0) // Índice da foto selecionada como capa
+
+  // Estados para fotos do índice
+  const [indexPhotos, setIndexPhotos] = useState([]) // Array de {file, preview, id, order}
+  const [isProcessingIndexOCR, setIsProcessingIndexOCR] = useState(false)
+  const [indexOCRProgress, setIndexOCRProgress] = useState(0)
+
   // Estados para gerenciamento de categorias
   const [categorias, setCategorias] = useState([
     "Espiritualidade",
@@ -212,6 +221,174 @@ function CadastroLivro() {
     }
   }
 
+  // Funções para múltiplas fotos do livro
+  const handleMultiplePhotosChange = (e) => {
+    const files = Array.from(e.target.files)
+
+    const newPhotos = files.map((file, index) => {
+      const reader = new FileReader()
+      const photoId = Date.now() + index
+
+      reader.onloadend = () => {
+        setBookPhotos(prev => {
+          const existingPhoto = prev.find(p => p.id === photoId)
+          if (existingPhoto) {
+            return prev.map(p => p.id === photoId ? {...p, preview: reader.result} : p)
+          }
+          return prev
+        })
+      }
+      reader.readAsDataURL(file)
+
+      return {
+        file,
+        preview: null,
+        id: photoId
+      }
+    })
+
+    setBookPhotos(prev => [...prev, ...newPhotos])
+
+    // Se é a primeira foto, processar OCR automaticamente
+    if (bookPhotos.length === 0 && newPhotos.length > 0) {
+      processImageOCR(newPhotos[0].file)
+    }
+  }
+
+  const handleRemoveBookPhoto = (photoId) => {
+    setBookPhotos(prev => prev.filter(p => p.id !== photoId))
+    // Se removeu a foto de capa, selecionar a primeira
+    if (bookPhotos[coverPhotoIndex]?.id === photoId) {
+      setCoverPhotoIndex(0)
+    }
+  }
+
+  const handleSetCoverPhoto = (index) => {
+    setCoverPhotoIndex(index)
+    // Processar OCR da nova foto de capa
+    if (bookPhotos[index]) {
+      processImageOCR(bookPhotos[index].file)
+    }
+  }
+
+  // Funções para fotos do índice
+  const handleIndexPhotosChange = async (e) => {
+    const files = Array.from(e.target.files)
+
+    const newPhotos = files.map((file, index) => {
+      const reader = new FileReader()
+      const photoId = Date.now() + index
+
+      reader.onloadend = () => {
+        setIndexPhotos(prev => {
+          const existingPhoto = prev.find(p => p.id === photoId)
+          if (existingPhoto) {
+            return prev.map(p => p.id === photoId ? {...p, preview: reader.result} : p)
+          }
+          return prev
+        })
+      }
+      reader.readAsDataURL(file)
+
+      return {
+        file,
+        preview: null,
+        id: photoId,
+        order: indexPhotos.length + index,
+        text: ''
+      }
+    })
+
+    setIndexPhotos(prev => [...prev, ...newPhotos])
+  }
+
+  const handleRemoveIndexPhoto = (photoId) => {
+    setIndexPhotos(prev => prev.filter(p => p.id !== photoId))
+  }
+
+  const handleReorderIndexPhoto = (photoId, direction) => {
+    setIndexPhotos(prev => {
+      const index = prev.findIndex(p => p.id === photoId)
+      if (index === -1) return prev
+
+      const newIndex = direction === 'up' ? index - 1 : index + 1
+      if (newIndex < 0 || newIndex >= prev.length) return prev
+
+      const newArray = [...prev]
+      const [removed] = newArray.splice(index, 1)
+      newArray.splice(newIndex, 0, removed)
+
+      return newArray.map((photo, i) => ({...photo, order: i}))
+    })
+  }
+
+  // OCR para fotos do índice
+  const processIndexOCR = async () => {
+    if (indexPhotos.length === 0) return
+
+    setIsProcessingIndexOCR(true)
+    setIndexOCRProgress(0)
+
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+
+    try {
+      const processedPhotos = []
+
+      for (let i = 0; i < indexPhotos.length; i++) {
+        const photo = indexPhotos[i]
+        setIndexOCRProgress(Math.round(((i + 1) / indexPhotos.length) * 100))
+
+        const formData = new FormData()
+        formData.append('image', photo.file)
+
+        const response = await fetch(`${API_BASE_URL}/ocr/analyze-cover`, {
+          method: 'POST',
+          body: formData
+        })
+
+        const data = await response.json()
+
+        if (data.success && data.data) {
+          // Extrair todo o texto retornado pelo OCR
+          const extractedText = [
+            data.data.titulo,
+            data.data.autor,
+            data.data.editora,
+            data.data.ano
+          ].filter(Boolean).join(' ')
+
+          processedPhotos.push({
+            ...photo,
+            text: extractedText
+          })
+        } else {
+          processedPhotos.push({
+            ...photo,
+            text: '[Texto não identificado]'
+          })
+        }
+      }
+
+      setIndexPhotos(processedPhotos)
+
+      // Atualizar textarea do índice automaticamente
+      const fullIndexText = processedPhotos
+        .sort((a, b) => a.order - b.order)
+        .map(p => p.text)
+        .join('\n')
+
+      setFormData(prev => ({
+        ...prev,
+        indice: fullIndexText
+      }))
+
+    } catch (error) {
+      console.error('Erro ao processar OCR do índice:', error)
+    } finally {
+      setIsProcessingIndexOCR(false)
+    }
+  }
+
   // Funções de gerenciamento de categorias
   const handleAddCategoria = () => {
     if (novaCategoria.trim() && !categorias.includes(novaCategoria.trim())) {
@@ -350,10 +527,10 @@ function CadastroLivro() {
 
       let capaUrl = formData.capa_url
 
-      // Se escolheu upload de arquivo, fazer upload primeiro
-      if (uploadMethod === "file" && selectedFile) {
+      // Se há foto de capa selecionada, fazer upload
+      if (bookPhotos.length > 0 && bookPhotos[coverPhotoIndex]) {
         setUploadProgress(50)
-        capaUrl = await uploadImage(selectedFile)
+        capaUrl = await uploadImage(bookPhotos[coverPhotoIndex].file)
         setUploadProgress(75)
       }
 
@@ -412,6 +589,12 @@ function CadastroLivro() {
       setOcrProgress(0)
       setOcrSuggestions(null)
       setOcrError("")
+      // Limpar estados de múltiplas fotos
+      setBookPhotos([])
+      setCoverPhotoIndex(0)
+      setIndexPhotos([])
+      setIsProcessingIndexOCR(false)
+      setIndexOCRProgress(0)
     } catch (error) {
       console.error("Erro ao cadastrar livro:", error)
       setSubmitMessage({
@@ -461,6 +644,214 @@ function CadastroLivro() {
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 md:p-8"
       >
         <div className="space-y-6">
+          {/* Fotos do Livro - SEÇÃO PRINCIPAL NO TOPO */}
+          <div className="border-2 border-primary-200 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6">
+            <label className="block text-lg font-semibold text-gray-900 mb-3">
+              Fotos do Livro{" "}
+              <span className="text-gray-400 text-sm font-normal">(opcional)</span>
+            </label>
+
+            {/* Dicas para melhor OCR */}
+            <div className="mb-4 p-3 bg-white rounded-lg border border-blue-200">
+              <p className="text-xs font-medium text-blue-900 mb-1 flex items-center gap-1">
+                <span className="text-sm">🤖</span> Análise inteligente com Claude AI
+              </p>
+              <p className="text-xs text-blue-700 mb-2">
+                A foto selecionada como capa será analisada automaticamente para extrair título, autor, editora e ano.
+              </p>
+              <p className="text-xs font-medium text-blue-800 mb-1">
+                💡 Dicas para melhor resultado:
+              </p>
+              <ul className="text-xs text-blue-700 space-y-0.5 ml-4 list-disc">
+                <li>Tire a foto com boa iluminação</li>
+                <li>Centralize a capa do livro</li>
+                <li>Evite reflexos e sombras</li>
+                <li>Mantenha a câmera firme e focada</li>
+              </ul>
+            </div>
+
+            {/* Botões de upload */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+              <label className="flex items-center justify-center gap-2 px-4 py-3 bg-primary-50 hover:bg-primary-100 text-primary-700 font-medium rounded-lg border-2 border-primary-300 cursor-pointer transition-all duration-200 active:scale-95">
+                <Camera className="h-5 w-5" />
+                <span>Tirar Foto</span>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png"
+                  capture="environment"
+                  multiple
+                  onChange={handleMultiplePhotosChange}
+                  className="hidden"
+                />
+              </label>
+
+              <label className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium rounded-lg border-2 border-blue-300 cursor-pointer transition-all duration-200 active:scale-95">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Escolher da Galeria</span>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png"
+                  multiple
+                  onChange={handleMultiplePhotosChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {/* Grid de fotos selecionadas */}
+            {bookPhotos.length > 0 && (
+              <div className="bg-white rounded-lg p-4 border border-blue-200">
+                <p className="text-sm font-medium text-gray-900 mb-3">
+                  Fotos selecionadas ({bookPhotos.length})
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {bookPhotos.map((photo, index) => (
+                    <div key={photo.id} className="relative group">
+                      <div className={`relative border-4 rounded-lg overflow-hidden ${
+                        coverPhotoIndex === index
+                          ? 'border-green-500 shadow-lg'
+                          : 'border-gray-200 hover:border-primary-300'
+                      }`}>
+                        {photo.preview && (
+                          <img
+                            src={photo.preview}
+                            alt={`Foto ${index + 1}`}
+                            className="w-full h-32 object-cover"
+                          />
+                        )}
+                        {!photo.preview && (
+                          <div className="w-full h-32 bg-gray-100 animate-pulse flex items-center justify-center">
+                            <Loader className="h-6 w-6 text-gray-400 animate-spin" />
+                          </div>
+                        )}
+
+                        {/* Indicador de capa */}
+                        {coverPhotoIndex === index && (
+                          <div className="absolute top-1 left-1 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            CAPA
+                          </div>
+                        )}
+
+                        {/* Botão remover */}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveBookPhoto(photo.id)}
+                          className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      {/* Botão selecionar como capa */}
+                      <button
+                        type="button"
+                        onClick={() => handleSetCoverPhoto(index)}
+                        className={`w-full mt-1 px-2 py-1 text-xs font-medium rounded transition-colors ${
+                          coverPhotoIndex === index
+                            ? 'bg-green-500 text-white'
+                            : 'bg-gray-200 text-gray-700 hover:bg-primary-100'
+                        }`}
+                      >
+                        {coverPhotoIndex === index ? '✓ Capa selecionada' : 'Definir como capa'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Loading do OCR */}
+                {isProcessingOCR && (
+                  <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-300">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Loader className="h-5 w-5 text-primary-600 animate-spin" />
+                      <p className="text-sm font-medium text-gray-800">
+                        Claude AI está analisando a capa...
+                      </p>
+                    </div>
+                    {ocrProgress > 0 && (
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${ocrProgress}%` }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Sugestões do OCR */}
+                {ocrSuggestions && !isProcessingOCR && (
+                  <div className="mt-4 p-4 bg-white rounded-lg border-2 border-green-400">
+                    <p className="text-sm font-bold text-green-800 mb-3 flex items-center gap-2">
+                      ✓ Sugestões detectadas na capa:
+                    </p>
+                    <div className="space-y-2 mb-4">
+                      {ocrSuggestions.titulo && (
+                        <div className="text-sm">
+                          <span className="font-medium text-gray-700">Título:</span>
+                          <span className="ml-2 text-gray-900">{ocrSuggestions.titulo}</span>
+                        </div>
+                      )}
+                      {ocrSuggestions.autor && (
+                        <div className="text-sm">
+                          <span className="font-medium text-gray-700">Autor:</span>
+                          <span className="ml-2 text-gray-900">{ocrSuggestions.autor}</span>
+                        </div>
+                      )}
+                      {ocrSuggestions.editora && (
+                        <div className="text-sm">
+                          <span className="font-medium text-gray-700">Editora:</span>
+                          <span className="ml-2 text-gray-900">{ocrSuggestions.editora}</span>
+                        </div>
+                      )}
+                      {ocrSuggestions.ano && (
+                        <div className="text-sm">
+                          <span className="font-medium text-gray-700">Ano:</span>
+                          <span className="ml-2 text-gray-900">{ocrSuggestions.ano}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={handleApplySuggestions}
+                        className="px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors flex items-center gap-1"
+                      >
+                        <Check className="h-4 w-4" />
+                        Usar sugestões
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleIgnoreSuggestions}
+                        className="px-3 py-1.5 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors flex items-center gap-1"
+                      >
+                        <X className="h-4 w-4" />
+                        Ignorar
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Erro do OCR */}
+                {ocrError && !isProcessingOCR && (
+                  <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-300">
+                    <p className="text-sm text-yellow-800 mb-2">
+                      {ocrError}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleRetryOCR}
+                      className="px-3 py-1.5 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition-colors"
+                    >
+                      Tentar novamente
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Título */}
           <div>
             <label
@@ -609,248 +1000,6 @@ function CadastroLivro() {
             </div>
           </div>
 
-          {/* Capa do Livro - Escolha entre URL ou Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Capa do Livro{" "}
-              <span className="text-gray-400 text-xs font-normal">
-                (opcional)
-              </span>
-            </label>
-
-            {/* Opções de método */}
-            <div className="flex gap-4 mb-4">
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="uploadMethod"
-                  value="file"
-                  checked={uploadMethod === "file"}
-                  onChange={(e) => setUploadMethod(e.target.value)}
-                  className="mr-2"
-                />
-                <span className="text-sm text-gray-700">Enviar arquivo</span>
-              </label>
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="uploadMethod"
-                  value="url"
-                  checked={uploadMethod === "url"}
-                  onChange={(e) => setUploadMethod(e.target.value)}
-                  className="mr-2"
-                />
-                <span className="text-sm text-gray-700">URL da imagem</span>
-              </label>
-            </div>
-
-            {/* Campo de URL */}
-            {uploadMethod === "url" && (
-              <div>
-                <input
-                  type="url"
-                  id="capa_url"
-                  name="capa_url"
-                  value={formData.capa_url}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
-                />
-                <p className="mt-1 text-sm text-gray-500">
-                  Cole a URL completa da imagem da capa
-                </p>
-              </div>
-            )}
-
-            {/* Campo de Upload */}
-            {uploadMethod === "file" && (
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Camera className="h-5 w-5 text-primary-600" />
-                  <label className="text-sm font-medium text-gray-700">
-                    Tire uma foto ou escolha um arquivo
-                  </label>
-                </div>
-
-                {/* Dicas para melhor OCR */}
-                <div className="mb-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-                  <p className="text-xs font-medium text-blue-900 mb-1 flex items-center gap-1">
-                    <span className="text-sm">🤖</span> Análise inteligente com Claude AI
-                  </p>
-                  <p className="text-xs text-blue-700 mb-2">
-                    A capa será analisada automaticamente para extrair título, autor, editora e ano.
-                  </p>
-                  <p className="text-xs font-medium text-blue-800 mb-1">
-                    💡 Dicas para melhor resultado:
-                  </p>
-                  <ul className="text-xs text-blue-700 space-y-0.5 ml-4 list-disc">
-                    <li>Tire a foto com boa iluminação</li>
-                    <li>Centralize a capa do livro</li>
-                    <li>Evite reflexos e sombras</li>
-                    <li>Mantenha a câmera firme e focada</li>
-                  </ul>
-                </div>
-
-                {/* Botões separados para Câmera e Galeria */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                  {/* Botão Tirar Foto */}
-                  <label className="flex items-center justify-center gap-2 px-4 py-3 bg-primary-50 hover:bg-primary-100 text-primary-700 font-medium rounded-lg border-2 border-primary-300 cursor-pointer transition-all duration-200 active:scale-95">
-                    <Camera className="h-5 w-5" />
-                    <span>Tirar Foto</span>
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/jpg,image/png"
-                      capture="environment"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </label>
-
-                  {/* Botão Escolher da Galeria */}
-                  <label className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium rounded-lg border-2 border-blue-300 cursor-pointer transition-all duration-200 active:scale-95">
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span>Escolher da Galeria</span>
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/jpg,image/png"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
-
-                <p className="text-sm text-gray-500">
-                  JPG ou PNG. Máximo 5MB. A capa será analisada automaticamente para preencher os campos.
-                </p>
-
-                {/* Preview da imagem */}
-                {selectedFile && previewUrl && (
-                  <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
-                    <p className="text-sm font-medium text-blue-800 mb-3 flex items-center gap-2">
-                      <Camera className="h-4 w-4" />
-                      Arquivo selecionado: {selectedFile.name}
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      <div className="relative flex-shrink-0">
-                        <img
-                          src={previewUrl}
-                          alt="Preview da capa"
-                          className="max-h-64 w-auto object-contain rounded-lg border-2 border-blue-300 shadow-lg mx-auto sm:mx-0"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-blue-700 font-medium mb-2">
-                          Preview da capa
-                        </p>
-
-                        {/* Loading do OCR */}
-                        {isProcessingOCR && (
-                          <div className="bg-white rounded-lg p-4 border border-blue-300 mb-3">
-                            <div className="flex items-center gap-3 mb-2">
-                              <Loader className="h-5 w-5 text-primary-600 animate-spin" />
-                              <p className="text-sm font-medium text-gray-800">
-                                Claude AI está analisando a capa...
-                              </p>
-                            </div>
-                            {ocrProgress > 0 && (
-                              <div className="w-full bg-gray-200 rounded-full h-2">
-                                <div
-                                  className="bg-primary-600 h-2 rounded-full transition-all duration-300"
-                                  style={{ width: `${ocrProgress}%` }}
-                                />
-                              </div>
-                            )}
-                            <p className="text-xs text-gray-600 mt-1">
-                              Usando IA avançada para identificar título, autor e mais...
-                            </p>
-                          </div>
-                        )}
-
-                        {/* Sugestões do OCR */}
-                        {ocrSuggestions && !isProcessingOCR && (
-                          <div className="bg-white rounded-lg p-4 border-2 border-green-400 mb-3">
-                            <p className="text-sm font-bold text-green-800 mb-3 flex items-center gap-2">
-                              ✓ Sugestões detectadas na capa:
-                            </p>
-                            <div className="space-y-2 mb-4">
-                              {ocrSuggestions.titulo && (
-                                <div className="text-sm">
-                                  <span className="font-medium text-gray-700">Título:</span>
-                                  <span className="ml-2 text-gray-900">{ocrSuggestions.titulo}</span>
-                                </div>
-                              )}
-                              {ocrSuggestions.autor && (
-                                <div className="text-sm">
-                                  <span className="font-medium text-gray-700">Autor:</span>
-                                  <span className="ml-2 text-gray-900">{ocrSuggestions.autor}</span>
-                                </div>
-                              )}
-                              {ocrSuggestions.editora && (
-                                <div className="text-sm">
-                                  <span className="font-medium text-gray-700">Editora:</span>
-                                  <span className="ml-2 text-gray-900">{ocrSuggestions.editora}</span>
-                                </div>
-                              )}
-                              {ocrSuggestions.ano && (
-                                <div className="text-sm">
-                                  <span className="font-medium text-gray-700">Ano:</span>
-                                  <span className="ml-2 text-gray-900">{ocrSuggestions.ano}</span>
-                                </div>
-                              )}
-                            </div>
-                            <p className="text-xs text-gray-600 mb-3">
-                              Deseja usar essas sugestões?
-                            </p>
-                            <div className="flex flex-wrap gap-2">
-                              <button
-                                type="button"
-                                onClick={handleApplySuggestions}
-                                className="px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors flex items-center gap-1"
-                              >
-                                <Check className="h-4 w-4" />
-                                Usar sugestões
-                              </button>
-                              <button
-                                type="button"
-                                onClick={handleIgnoreSuggestions}
-                                className="px-3 py-1.5 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors flex items-center gap-1"
-                              >
-                                <X className="h-4 w-4" />
-                                Ignorar
-                              </button>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Erro do OCR */}
-                        {ocrError && !isProcessingOCR && (
-                          <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-300 mb-3">
-                            <p className="text-sm text-yellow-800 mb-2">
-                              {ocrError}
-                            </p>
-                            <button
-                              type="button"
-                              onClick={handleRetryOCR}
-                              className="px-3 py-1.5 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition-colors"
-                            >
-                              Tentar novamente
-                            </button>
-                          </div>
-                        )}
-
-                        {!isProcessingOCR && !ocrSuggestions && !ocrError && (
-                          <p className="text-xs text-blue-600">
-                            Esta imagem será enviada ao cadastrar o livro
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
 
           {/* Descrição */}
           <div>
@@ -892,6 +1041,169 @@ function CadastroLivro() {
               rows="8"
               className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
             />
+          </div>
+
+          {/* Fotos do Índice - Upload múltiplo com OCR */}
+          <div className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6">
+            <label className="block text-lg font-semibold text-gray-900 mb-3">
+              Fotos do Índice{" "}
+              <span className="text-gray-400 text-sm font-normal">(opcional)</span>
+            </label>
+            <p className="text-sm text-gray-700 mb-4">
+              Tire fotos das páginas do índice do livro. O texto será extraído automaticamente e adicionado ao campo acima.
+            </p>
+
+            {/* Botões de upload */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+              <label className="flex items-center justify-center gap-2 px-4 py-3 bg-purple-50 hover:bg-purple-100 text-purple-700 font-medium rounded-lg border-2 border-purple-300 cursor-pointer transition-all duration-200 active:scale-95">
+                <Camera className="h-5 w-5" />
+                <span>Tirar Foto do Índice</span>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png"
+                  capture="environment"
+                  multiple
+                  onChange={handleIndexPhotosChange}
+                  className="hidden"
+                />
+              </label>
+
+              <label className="flex items-center justify-center gap-2 px-4 py-3 bg-pink-50 hover:bg-pink-100 text-pink-700 font-medium rounded-lg border-2 border-pink-300 cursor-pointer transition-all duration-200 active:scale-95">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Escolher da Galeria</span>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png"
+                  multiple
+                  onChange={handleIndexPhotosChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {/* Grid de fotos do índice */}
+            {indexPhotos.length > 0 && (
+              <div className="bg-white rounded-lg p-4 border border-purple-200">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm font-medium text-gray-900">
+                    Páginas do índice ({indexPhotos.length})
+                  </p>
+                  <button
+                    type="button"
+                    onClick={processIndexOCR}
+                    disabled={isProcessingIndexOCR}
+                    className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {isProcessingIndexOCR ? (
+                      <>
+                        <Loader className="h-4 w-4 animate-spin" />
+                        Processando...
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-lg">🤖</span>
+                        Extrair Texto
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Barra de progresso do OCR */}
+                {isProcessingIndexOCR && (
+                  <div className="mb-4 p-3 bg-purple-50 rounded-lg border border-purple-300">
+                    <p className="text-sm font-medium text-purple-900 mb-2">
+                      Processando {indexOCRProgress}%
+                    </p>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${indexOCRProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {indexPhotos.map((photo, index) => (
+                    <div key={photo.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      {/* Preview da imagem */}
+                      <div className="flex-shrink-0">
+                        {photo.preview ? (
+                          <img
+                            src={photo.preview}
+                            alt={`Índice ${index + 1}`}
+                            className="w-20 h-20 object-cover rounded border-2 border-gray-300"
+                          />
+                        ) : (
+                          <div className="w-20 h-20 bg-gray-100 animate-pulse rounded border-2 border-gray-300 flex items-center justify-center">
+                            <Loader className="h-5 w-5 text-gray-400 animate-spin" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Informações e controles */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm font-medium text-gray-900">
+                            Página {index + 1}
+                          </span>
+                          {photo.text && (
+                            <span className="text-xs text-green-600 font-medium">
+                              ✓ Texto extraído
+                            </span>
+                          )}
+                        </div>
+                        {photo.text && (
+                          <p className="text-xs text-gray-600 line-clamp-2">
+                            {photo.text}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Botões de controle */}
+                      <div className="flex flex-col gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleReorderIndexPhoto(photo.id, 'up')}
+                          disabled={index === 0}
+                          className="p-1 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                          title="Mover para cima"
+                        >
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleReorderIndexPhoto(photo.id, 'down')}
+                          disabled={index === indexPhotos.length - 1}
+                          className="p-1 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                          title="Mover para baixo"
+                        >
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveIndexPhoto(photo.id)}
+                          className="p-1 text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
+                          title="Remover"
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="text-xs text-gray-600 mt-3">
+                  💡 Dica: Use as setas para ordenar as páginas antes de extrair o texto
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Tags */}
@@ -993,6 +1305,12 @@ function CadastroLivro() {
               setOcrProgress(0)
               setOcrSuggestions(null)
               setOcrError("")
+              // Limpar estados de múltiplas fotos
+              setBookPhotos([])
+              setCoverPhotoIndex(0)
+              setIndexPhotos([])
+              setIsProcessingIndexOCR(false)
+              setIndexOCRProgress(0)
             }}
             className="btn-secondary w-full sm:w-auto"
             disabled={isSubmitting}
