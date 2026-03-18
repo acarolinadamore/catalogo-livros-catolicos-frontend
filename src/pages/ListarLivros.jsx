@@ -86,7 +86,7 @@ function ListarLivros() {
     // Aplicar filtros
     let resultado = livros;
 
-    // Filtro de busca geral
+    // Filtro de busca geral (NÃO inclui índice - índice só é buscado na coluna específica)
     if (searchQuery) {
       const query = normalizeText(searchQuery);
       resultado = resultado.filter(livro =>
@@ -94,7 +94,6 @@ function ListarLivros() {
         normalizeText(livro.author).includes(query) ||
         normalizeText(livro.publisher).includes(query) ||
         normalizeText(livro.category).includes(query) ||
-        normalizeText(livro.index_text).includes(query) ||
         normalizeText(livro.tags).includes(query)
       );
     }
