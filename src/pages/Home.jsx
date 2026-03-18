@@ -270,20 +270,6 @@ function Home() {
               />
             </div>
 
-            {/* Filtro: Índice */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Índice
-              </label>
-              <input
-                type="text"
-                value={filters.indice}
-                onChange={(e) => handleFilterChange('indice', e.target.value)}
-                placeholder="Buscar no índice..."
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all hover:border-gray-400"
-              />
-            </div>
-
             {/* Filtro: Tags */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -308,6 +294,20 @@ function Home() {
                   <option key={tag} value={tag}>{tag}</option>
                 ))}
               </select>
+            </div>
+
+            {/* Filtro: Índice - ocupa 2 colunas */}
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Índice
+              </label>
+              <input
+                type="text"
+                value={filters.indice}
+                onChange={(e) => handleFilterChange('indice', e.target.value)}
+                placeholder="Buscar no índice..."
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all hover:border-gray-400"
+              />
             </div>
           </div>
         </div>
