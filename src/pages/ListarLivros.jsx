@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 import { Eye, Edit2, Trash2, X, Check, Settings, Plus, Search, ExternalLink, ChevronDown } from 'lucide-react';
 
 // Função para normalizar texto removendo acentos e convertendo para lowercase
@@ -167,6 +168,91 @@ function ListarLivros() {
     });
     return Array.from(tagsSet).sort();
   }, [livros]);
+
+  // Estilos customizados para react-select (filtros de coluna)
+  const selectStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: '34px',
+      borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.2)' : 'none',
+      '&:hover': {
+        borderColor: '#9ca3af'
+      },
+      borderRadius: '0.25rem',
+      cursor: 'pointer',
+      fontSize: '0.875rem'
+    }),
+    menu: (base) => ({
+      ...base,
+      borderRadius: '0.5rem',
+      marginTop: '4px',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      zIndex: 50
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected ? '#3b82f6' : state.isFocused ? '#eff6ff' : 'white',
+      color: state.isSelected ? 'white' : '#111827',
+      cursor: 'pointer',
+      fontSize: '0.875rem',
+      '&:active': {
+        backgroundColor: '#3b82f6'
+      }
+    }),
+    input: (base) => ({
+      ...base,
+      color: '#111827',
+      fontSize: '0.875rem'
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: '#9ca3af',
+      fontSize: '0.875rem'
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: '#111827',
+      fontSize: '0.875rem'
+    }),
+    clearIndicator: (base) => ({
+      ...base,
+      padding: '4px'
+    }),
+    dropdownIndicator: (base) => ({
+      ...base,
+      padding: '4px'
+    })
+  };
+
+  // Opções para dropdowns ordenadas alfabeticamente
+  const editoraOptions = useMemo(() => {
+    const editoras = new Set();
+    livros.forEach(livro => {
+      if (livro.publisher) {
+        editoras.add(livro.publisher);
+      }
+    });
+    return Array.from(editoras)
+      .sort((a, b) => a.localeCompare(b, 'pt-BR'))
+      .map(editora => ({ value: editora, label: editora }));
+  }, [livros]);
+
+  const categoriaOptions = useMemo(() => {
+    const categorias = new Set();
+    livros.forEach(livro => {
+      if (livro.category) {
+        categorias.add(livro.category);
+      }
+    });
+    return Array.from(categorias)
+      .sort((a, b) => a.localeCompare(b, 'pt-BR'))
+      .map(categoria => ({ value: categoria, label: categoria }));
+  }, [livros]);
+
+  const tagsOptions = useMemo(() => {
+    return todasTags.map(tag => ({ value: tag, label: tag }));
+  }, [todasTags]);
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
@@ -671,21 +757,25 @@ function ListarLivros() {
                     />
                   </th>
                   <th className="px-3 py-2 bg-gray-100">
-                    <input
-                      type="text"
-                      name="editora"
-                      value={filtros.editora}
-                      onChange={handleFiltroChange}
-                      className="w-full px-2 py-1.5 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    <Select
+                      options={editoraOptions}
+                      value={editoraOptions.find(opt => opt.value === filtros.editora) || null}
+                      onChange={(option) => handleFiltroChange({ target: { name: 'editora', value: option?.value || '' } })}
+                      isClearable
+                      placeholder=""
+                      noOptionsMessage={() => "Nenhuma editora"}
+                      styles={selectStyles}
                     />
                   </th>
                   <th className="px-3 py-2 bg-gray-100">
-                    <input
-                      type="text"
-                      name="categoria"
-                      value={filtros.categoria}
-                      onChange={handleFiltroChange}
-                      className="w-full px-2 py-1.5 text-sm font-normal border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    <Select
+                      options={categoriaOptions}
+                      value={categoriaOptions.find(opt => opt.value === filtros.categoria) || null}
+                      onChange={(option) => handleFiltroChange({ target: { name: 'categoria', value: option?.value || '' } })}
+                      isClearable
+                      placeholder=""
+                      noOptionsMessage={() => "Nenhuma categoria"}
+                      styles={selectStyles}
                     />
                   </th>
                   <th className="px-3 py-2 bg-gray-100">
@@ -707,116 +797,19 @@ function ListarLivros() {
                     />
                   </th>
                   <th className="px-3 py-2 bg-gray-100">
-                    <div className="relative" ref={tagsDropdownRef}>
-                      <div className="relative min-h-[38px] border border-gray-300 rounded bg-white px-2 py-1 flex flex-wrap gap-1 items-center focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500">
-                        {/* Tags selecionadas como chips */}
-                        {filtros.tags.map((tag, index) => (
-                          <span
-                            key={index}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 bg-white rounded-full text-xs font-medium border"
-                            style={{ color: '#5A89B4', borderColor: '#5A89B4' }}
-                          >
-                            {tag}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setFiltros(prev => ({
-                                  ...prev,
-                                  tags: prev.tags.filter(t => t !== tag)
-                                }));
-                              }}
-                              className="hover:opacity-70 transition-opacity"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </span>
-                        ))}
-
-                        {/* Input para buscar novas tags */}
-                        <input
-                          type="text"
-                          value={tagSearchQuery}
-                          onChange={(e) => {
-                            setTagSearchQuery(e.target.value);
-                            setShowTagsDropdown(true);
-                          }}
-                          onFocus={() => setShowTagsDropdown(true)}
-                          placeholder={filtros.tags.length === 0 ? "Buscar tag..." : ""}
-                          className="flex-1 min-w-[100px] text-sm font-normal border-0 focus:ring-0 focus:outline-none p-0.5"
-                        />
-
-                        <div className="flex gap-1">
-                          {filtros.tags.length > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setFiltros(prev => ({ ...prev, tags: [] }));
-                                setTagSearchQuery('');
-                                setShowTagsDropdown(false);
-                              }}
-                              className="p-1 hover:bg-gray-100 rounded transition-colors"
-                              title="Limpar todas"
-                            >
-                              <X className="h-4 w-4 text-gray-500" />
-                            </button>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => setShowTagsDropdown(!showTagsDropdown)}
-                            className="p-1 hover:bg-gray-100 rounded"
-                          >
-                            <ChevronDown className="h-4 w-4 text-gray-400" />
-                          </button>
-                        </div>
-                      </div>
-
-                      {showTagsDropdown && todasTags.length > 0 && (
-                        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto custom-scrollbar">
-                          {filtros.tags.length > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setFiltros(prev => ({ ...prev, tags: [] }));
-                                setTagSearchQuery('');
-                                setShowTagsDropdown(false);
-                              }}
-                              className="w-full px-3 py-2 text-left text-sm bg-gray-50 hover:bg-gray-100 font-medium text-gray-700 border-b border-gray-200"
-                            >
-                              ✕ Limpar todas as tags
-                            </button>
-                          )}
-                          {todasTags
-                            .filter(tag =>
-                              !filtros.tags.includes(tag) &&
-                              normalizeText(tag).includes(normalizeText(tagSearchQuery))
-                            )
-                            .map((tag, index) => (
-                              <button
-                                key={index}
-                                type="button"
-                                onClick={() => {
-                                  setFiltros(prev => ({
-                                    ...prev,
-                                    tags: [...prev.tags, tag]
-                                  }));
-                                  setTagSearchQuery('');
-                                }}
-                                className="w-full px-3 py-2 text-left text-sm hover:bg-primary-50 hover:text-primary-700 transition-colors"
-                              >
-                                {tag}
-                              </button>
-                            ))}
-                          {todasTags.filter(tag =>
-                            !filtros.tags.includes(tag) &&
-                            normalizeText(tag).includes(normalizeText(tagSearchQuery))
-                          ).length === 0 && (
-                            <div className="px-3 py-2 text-sm text-gray-500 text-center">
-                              {filtros.tags.length === todasTags.length ? 'Todas as tags selecionadas' : 'Nenhuma tag encontrada'}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                    <Select
+                      options={tagsOptions}
+                      value={tagsOptions.filter(opt => filtros.tags.includes(opt.value))}
+                      onChange={(selectedOptions) => {
+                        const tags = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
+                        setFiltros(prev => ({ ...prev, tags }));
+                      }}
+                      isMulti
+                      isClearable
+                      placeholder=""
+                      noOptionsMessage={() => "Nenhuma tag"}
+                      styles={selectStyles}
+                    />
                   </th>
                   <th className="px-3 py-2 bg-gray-100 sticky right-0 z-[110] shadow-[-2px_0_4px_rgba(0,0,0,0.05)]"></th>
                 </tr>
