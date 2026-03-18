@@ -15,17 +15,11 @@ function Home() {
   const [filters, setFilters] = useState({
     titulo: '',
     autor: '',
-    editora: '',
-    categoria: '',
     ano: '',
     indice: '',
     tags: '',
     content_type: '',
-    intercessor: '',
-    pastoral_use: '',
-    publisher: '',
-    year_min: '',
-    year_max: ''
+    publisher: ''
   });
 
   // Estado dos resultados
@@ -116,13 +110,6 @@ function Home() {
           );
         }
 
-        if (filters.editora) {
-          const query = normalizeText(filters.editora);
-          resultado = resultado.filter(livro =>
-            normalizeText(livro.publisher).includes(query)
-          );
-        }
-
         if (filters.ano) {
           resultado = resultado.filter(livro =>
             livro.year && livro.year.toString().includes(filters.ano)
@@ -163,17 +150,11 @@ function Home() {
     setFilters({
       titulo: '',
       autor: '',
-      editora: '',
-      categoria: '',
       ano: '',
       indice: '',
       tags: '',
       content_type: '',
-      intercessor: '',
-      pastoral_use: '',
-      publisher: '',
-      year_min: '',
-      year_max: ''
+      publisher: ''
     });
   }
 
@@ -187,7 +168,7 @@ function Home() {
       />
 
       {/* Conteúdo principal */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         {/* Filtros em cima dos cards - sempre abertos */}
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
@@ -211,7 +192,7 @@ function Home() {
                 value={filters.titulo}
                 onChange={(e) => handleFilterChange('titulo', e.target.value)}
                 placeholder="Buscar por título..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all hover:border-gray-400"
               />
             </div>
 
@@ -225,7 +206,7 @@ function Home() {
                 value={filters.autor}
                 onChange={(e) => handleFilterChange('autor', e.target.value)}
                 placeholder="Buscar por autor..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all hover:border-gray-400"
               />
             </div>
 
@@ -234,13 +215,22 @@ function Home() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Editora
               </label>
-              <input
-                type="text"
-                value={filters.editora}
-                onChange={(e) => handleFilterChange('editora', e.target.value)}
-                placeholder="Buscar por editora..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500"
-              />
+              <select
+                value={filters.publisher || ''}
+                onChange={(e) => handleFilterChange('publisher', e.target.value)}
+                className="w-full px-3 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 bg-white text-gray-900 appearance-none cursor-pointer transition-all hover:border-gray-400"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 0.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em'
+                }}
+              >
+                <option value="">Todas as editoras</option>
+                {filterOptions.publishers?.map(publisher => (
+                  <option key={publisher} value={publisher}>{publisher}</option>
+                ))}
+              </select>
             </div>
 
             {/* Filtro: Categoria */}
@@ -251,9 +241,15 @@ function Home() {
               <select
                 value={filters.content_type || ''}
                 onChange={(e) => handleFilterChange('content_type', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500"
+                className="w-full px-3 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 bg-white text-gray-900 appearance-none cursor-pointer transition-all hover:border-gray-400"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 0.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em'
+                }}
               >
-                <option value="">Todas</option>
+                <option value="">Todas as categorias</option>
                 {filterOptions.contentTypes?.map(type => (
                   <option key={type} value={type}>{type}</option>
                 ))}
@@ -270,7 +266,7 @@ function Home() {
                 value={filters.ano}
                 onChange={(e) => handleFilterChange('ano', e.target.value)}
                 placeholder="Ex: 2020"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all hover:border-gray-400"
               />
             </div>
 
@@ -284,7 +280,7 @@ function Home() {
                 value={filters.indice}
                 onChange={(e) => handleFilterChange('indice', e.target.value)}
                 placeholder="Buscar no índice..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all hover:border-gray-400"
               />
             </div>
 
@@ -293,13 +289,25 @@ function Home() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Tags
               </label>
-              <input
-                type="text"
-                value={filters.tags}
+              <select
+                value={filters.tags || ''}
                 onChange={(e) => handleFilterChange('tags', e.target.value)}
-                placeholder="Buscar por tags..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500"
-              />
+                className="w-full px-3 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 bg-white text-gray-900 appearance-none cursor-pointer transition-all hover:border-gray-400"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 0.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em'
+                }}
+              >
+                <option value="">Todas as tags</option>
+                {filterOptions.intercessors?.map(tag => (
+                  <option key={tag} value={tag}>{tag}</option>
+                ))}
+                {filterOptions.pastoralUses?.map(tag => (
+                  <option key={tag} value={tag}>{tag}</option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
