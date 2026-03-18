@@ -275,6 +275,25 @@ function CadastroLivro() {
   const handleMultiplePhotosChange = (e) => {
     const files = Array.from(e.target.files)
 
+    // Se é apenas uma foto (captura de câmera), abrir modal de recorte primeiro
+    if (files.length === 1) {
+      const file = files[0]
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImageToCrop(reader.result)
+        setCropContext({
+          type: 'cover',
+          tempFile: file,
+          isNewPhoto: true,
+          isFirstPhoto: bookPhotos.length === 0
+        })
+        setShowCropModal(true)
+      }
+      reader.readAsDataURL(file)
+      return
+    }
+
+    // Múltiplas fotos: adicionar normalmente
     const newPhotos = files.map((file, index) => {
       const reader = new FileReader()
       const photoId = Date.now() + index
@@ -344,25 +363,56 @@ function CadastroLivro() {
       const preview = reader.result
 
       if (cropContext.type === 'cover') {
-        // Atualizar foto da capa
-        setBookPhotos(prev => prev.map(p =>
-          p.id === cropContext.photoId
-            ? { ...p, file, preview }
-            : p
-        ))
+        // Se é uma foto nova (capturada da câmera)
+        if (cropContext.isNewPhoto) {
+          const photoId = Date.now()
+          const newPhoto = {
+            file,
+            preview,
+            id: photoId
+          }
 
-        // Se é a foto de capa atual, processar OCR novamente
-        const photoIndex = bookPhotos.findIndex(p => p.id === cropContext.photoId)
-        if (photoIndex === coverPhotoIndex) {
-          processImageOCR(file)
+          setBookPhotos(prev => [...prev, newPhoto])
+
+          // Se é a primeira foto, processar OCR automaticamente
+          if (cropContext.isFirstPhoto) {
+            processImageOCR(file)
+          }
+        } else {
+          // Atualizar foto existente
+          setBookPhotos(prev => prev.map(p =>
+            p.id === cropContext.photoId
+              ? { ...p, file, preview }
+              : p
+          ))
+
+          // Se é a foto de capa atual, processar OCR novamente
+          const photoIndex = bookPhotos.findIndex(p => p.id === cropContext.photoId)
+          if (photoIndex === coverPhotoIndex) {
+            processImageOCR(file)
+          }
         }
       } else if (cropContext.type === 'index') {
-        // Atualizar foto do índice
-        setIndexPhotos(prev => prev.map(p =>
-          p.id === cropContext.photoId
-            ? { ...p, file, preview, text: '' } // Limpar texto ao recortar
-            : p
-        ))
+        // Se é uma foto nova (capturada da câmera)
+        if (cropContext.isNewPhoto) {
+          const photoId = Date.now()
+          const newPhoto = {
+            file,
+            preview,
+            id: photoId,
+            order: cropContext.order,
+            text: ''
+          }
+
+          setIndexPhotos(prev => [...prev, newPhoto])
+        } else {
+          // Atualizar foto existente
+          setIndexPhotos(prev => prev.map(p =>
+            p.id === cropContext.photoId
+              ? { ...p, file, preview, text: '' } // Limpar texto ao recortar
+              : p
+          ))
+        }
       }
     }
     reader.readAsDataURL(file)
@@ -447,6 +497,25 @@ function CadastroLivro() {
   const handleIndexPhotosChange = async (e) => {
     const files = Array.from(e.target.files)
 
+    // Se é apenas uma foto (captura de câmera), abrir modal de recorte primeiro
+    if (files.length === 1) {
+      const file = files[0]
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImageToCrop(reader.result)
+        setCropContext({
+          type: 'index',
+          tempFile: file,
+          isNewPhoto: true,
+          order: indexPhotos.length
+        })
+        setShowCropModal(true)
+      }
+      reader.readAsDataURL(file)
+      return
+    }
+
+    // Múltiplas fotos: adicionar normalmente
     const newPhotos = files.map((file, index) => {
       const reader = new FileReader()
       const photoId = Date.now() + index
