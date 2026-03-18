@@ -166,7 +166,7 @@ function ListarLivros() {
         });
       }
     });
-    return Array.from(tagsSet).sort();
+    return Array.from(tagsSet).sort((a, b) => a.localeCompare(b, 'pt-BR'));
   }, [livros]);
 
   // Estilos customizados para react-select (filtros de coluna)
