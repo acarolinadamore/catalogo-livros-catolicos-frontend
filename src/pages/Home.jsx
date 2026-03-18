@@ -168,7 +168,7 @@ function Home() {
       />
 
       {/* Conteúdo principal */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8">
         {/* Filtros em cima dos cards - sempre abertos */}
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
