@@ -983,7 +983,6 @@ function CadastroLivro() {
                   type="file"
                   accept="image/jpeg,image/jpg,image/png"
                   capture="environment"
-                  multiple
                   onChange={handleMultiplePhotosChange}
                   className="hidden"
                 />
@@ -1267,7 +1266,6 @@ function CadastroLivro() {
                   type="file"
                   accept="image/jpeg,image/jpg,image/png"
                   capture="environment"
-                  multiple
                   onChange={handleIndexPhotosChange}
                   className="hidden"
                 />
