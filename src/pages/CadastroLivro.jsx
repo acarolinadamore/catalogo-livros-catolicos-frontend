@@ -39,19 +39,19 @@ function CadastroLivro() {
   const [isProcessingIndexOCR, setIsProcessingIndexOCR] = useState(false)
   const [indexOCRProgress, setIndexOCRProgress] = useState(0)
 
-  // Estados para gerenciamento de categorias
+  // Estados para gerenciamento de categorias (ordem alfabética)
   const [categorias, setCategorias] = useState([
-    "Espiritualidade",
-    "Teologia",
+    "Bíblia",
     "Catequese",
+    "Doutrina Social",
+    "Espiritualidade",
+    "Filosofia",
+    "História da Igreja",
     "Liturgia",
     "Mariologia",
+    "Outros",
     "Santos",
-    "Bíblia",
-    "História da Igreja",
-    "Doutrina Social",
-    "Filosofia",
-    "Outros"
+    "Teologia"
   ])
   const [showCategoryModal, setShowCategoryModal] = useState(false)
   const [novaCategoria, setNovaCategoria] = useState("")
