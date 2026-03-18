@@ -3,7 +3,8 @@
  * Busca, filtros e lista de livros integrados
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import Select from 'react-select';
 import Hero from '../components/home/Hero';
 import Filters from '../components/home/Filters';
 import BookList from '../components/books/BookList';
@@ -145,6 +146,75 @@ function Home() {
     }));
   }
 
+  // Estilos customizados para react-select
+  const selectStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: '42px',
+      borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.2)' : 'none',
+      '&:hover': {
+        borderColor: '#9ca3af'
+      },
+      borderRadius: '0.5rem',
+      cursor: 'pointer',
+      transition: 'all 0.2s'
+    }),
+    menu: (base) => ({
+      ...base,
+      borderRadius: '0.5rem',
+      marginTop: '4px',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      zIndex: 50
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected ? '#3b82f6' : state.isFocused ? '#eff6ff' : 'white',
+      color: state.isSelected ? 'white' : '#111827',
+      cursor: 'pointer',
+      '&:active': {
+        backgroundColor: '#3b82f6'
+      }
+    }),
+    input: (base) => ({
+      ...base,
+      color: '#111827'
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: '#9ca3af'
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: '#111827'
+    })
+  };
+
+  // Preparar opções ordenadas alfabeticamente
+  const editoraOptions = useMemo(() => {
+    if (!filterOptions.publishers) return [];
+    return filterOptions.publishers
+      .map(pub => ({ value: pub, label: pub }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
+  }, [filterOptions.publishers]);
+
+  const categoriaOptions = useMemo(() => {
+    if (!filterOptions.contentTypes) return [];
+    return filterOptions.contentTypes
+      .map(type => ({ value: type, label: type }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
+  }, [filterOptions.contentTypes]);
+
+  const tagsOptions = useMemo(() => {
+    const allTags = [
+      ...(filterOptions.intercessors || []),
+      ...(filterOptions.pastoralUses || [])
+    ];
+    return allTags
+      .map(tag => ({ value: tag, label: tag }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
+  }, [filterOptions.intercessors, filterOptions.pastoralUses]);
+
   //  Função para limpar filtros
   function handleClearFilters() {
     setFilters({
@@ -215,22 +285,15 @@ function Home() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Editora
               </label>
-              <select
-                value={filters.publisher || ''}
-                onChange={(e) => handleFilterChange('publisher', e.target.value)}
-                className="w-full px-3 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 bg-white text-gray-900 appearance-none cursor-pointer transition-all hover:border-gray-400"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                  backgroundPosition: 'right 0.5rem center',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundSize: '1.5em 1.5em'
-                }}
-              >
-                <option value="">Todas as editoras</option>
-                {filterOptions.publishers?.map(publisher => (
-                  <option key={publisher} value={publisher}>{publisher}</option>
-                ))}
-              </select>
+              <Select
+                options={editoraOptions}
+                value={editoraOptions.find(opt => opt.value === filters.publisher) || null}
+                onChange={(option) => handleFilterChange('publisher', option?.value || '')}
+                isClearable
+                placeholder="Todas as editoras"
+                noOptionsMessage={() => "Nenhuma editora encontrada"}
+                styles={selectStyles}
+              />
             </div>
 
             {/* Filtro: Categoria */}
@@ -238,22 +301,15 @@ function Home() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Categoria
               </label>
-              <select
-                value={filters.content_type || ''}
-                onChange={(e) => handleFilterChange('content_type', e.target.value)}
-                className="w-full px-3 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 bg-white text-gray-900 appearance-none cursor-pointer transition-all hover:border-gray-400"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                  backgroundPosition: 'right 0.5rem center',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundSize: '1.5em 1.5em'
-                }}
-              >
-                <option value="">Todas as categorias</option>
-                {filterOptions.contentTypes?.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
+              <Select
+                options={categoriaOptions}
+                value={categoriaOptions.find(opt => opt.value === filters.content_type) || null}
+                onChange={(option) => handleFilterChange('content_type', option?.value || '')}
+                isClearable
+                placeholder="Todas as categorias"
+                noOptionsMessage={() => "Nenhuma categoria encontrada"}
+                styles={selectStyles}
+              />
             </div>
 
             {/* Filtro: Ano */}
@@ -275,25 +331,15 @@ function Home() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Tags
               </label>
-              <select
-                value={filters.tags || ''}
-                onChange={(e) => handleFilterChange('tags', e.target.value)}
-                className="w-full px-3 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 bg-white text-gray-900 appearance-none cursor-pointer transition-all hover:border-gray-400"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                  backgroundPosition: 'right 0.5rem center',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundSize: '1.5em 1.5em'
-                }}
-              >
-                <option value="">Todas as tags</option>
-                {filterOptions.intercessors?.map(tag => (
-                  <option key={tag} value={tag}>{tag}</option>
-                ))}
-                {filterOptions.pastoralUses?.map(tag => (
-                  <option key={tag} value={tag}>{tag}</option>
-                ))}
-              </select>
+              <Select
+                options={tagsOptions}
+                value={tagsOptions.find(opt => opt.value === filters.tags) || null}
+                onChange={(option) => handleFilterChange('tags', option?.value || '')}
+                isClearable
+                placeholder="Todas as tags"
+                noOptionsMessage={() => "Nenhuma tag encontrada"}
+                styles={selectStyles}
+              />
             </div>
 
             {/* Filtro: Índice - ocupa 2 colunas */}
