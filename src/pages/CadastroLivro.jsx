@@ -67,6 +67,10 @@ function CadastroLivro() {
   const [ocrSuggestions, setOcrSuggestions] = useState(null)
   const [ocrError, setOcrError] = useState("")
 
+  // Estados para detecção de duplicatas
+  const [duplicateBook, setDuplicateBook] = useState(null)
+  const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false)
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -126,6 +130,9 @@ function CadastroLivro() {
         if (data.data.titulo || data.data.autor) {
           setOcrSuggestions(data.data)
           setOcrProgress(100)
+
+          // Verificar duplicatas automaticamente após extração bem-sucedida
+          await checkForDuplicates(data.data.titulo, data.data.autor)
         } else {
           setOcrError("Não consegui identificar informações do livro na capa. Tente tirar uma foto mais nítida, com boa iluminação e sem reflexos.")
           setOcrProgress(0)
@@ -149,6 +156,40 @@ function CadastroLivro() {
       setOcrProgress(0)
     } finally {
       setIsProcessingOCR(false)
+    }
+  }
+
+  // Função para verificar se livro já existe no banco de dados
+  const checkForDuplicates = async (titulo, autor) => {
+    if (!titulo || !autor) return
+
+    try {
+      setIsCheckingDuplicate(true)
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+
+      const response = await fetch(`${API_BASE_URL}/ocr/check-duplicate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ titulo, autor })
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.isDuplicate) {
+        // Livro duplicado encontrado
+        setDuplicateBook(data.data)
+        console.log('Livro duplicado encontrado:', data.data)
+      } else {
+        // Nenhum duplicado
+        setDuplicateBook(null)
+      }
+    } catch (error) {
+      console.error('Erro ao verificar duplicatas:', error)
+      // Não mostrar erro ao usuário, apenas logar
+    } finally {
+      setIsCheckingDuplicate(false)
     }
   }
 
@@ -590,6 +631,9 @@ function CadastroLivro() {
       setIndexPhotos([])
       setIsProcessingIndexOCR(false)
       setIndexOCRProgress(0)
+      // Limpar estados de duplicata
+      setDuplicateBook(null)
+      setIsCheckingDuplicate(false)
     } catch (error) {
       console.error("Erro ao cadastrar livro:", error)
       setSubmitMessage({
@@ -630,6 +674,61 @@ function CadastroLivro() {
           }`}
         >
           {submitMessage.text}
+        </div>
+      )}
+
+      {/* Aviso de livro duplicado */}
+      {duplicateBook && (
+        <div className="mb-6 p-5 rounded-lg bg-yellow-50 border-2 border-yellow-400 shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <svg className="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-yellow-900 mb-2">
+                Este livro já está cadastrado!
+              </h3>
+              <p className="text-sm text-yellow-800 mb-3">
+                Encontramos um livro com título e autor similares no banco de dados:
+              </p>
+              <div className="bg-white rounded-lg p-4 border border-yellow-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <span className="font-semibold text-gray-700">Título:</span>
+                    <p className="text-gray-900">{duplicateBook.titulo}</p>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">Autor:</span>
+                    <p className="text-gray-900">{duplicateBook.autor}</p>
+                  </div>
+                  {duplicateBook.editora && (
+                    <div>
+                      <span className="font-semibold text-gray-700">Editora:</span>
+                      <p className="text-gray-900">{duplicateBook.editora}</p>
+                    </div>
+                  )}
+                  {duplicateBook.ano && (
+                    <div>
+                      <span className="font-semibold text-gray-700">Ano:</span>
+                      <p className="text-gray-900">{duplicateBook.ano}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <p className="text-xs text-yellow-700 mt-3">
+                Se você continuar o cadastro, terá um livro duplicado no banco de dados.
+              </p>
+              <button
+                type="button"
+                onClick={() => setDuplicateBook(null)}
+                className="mt-3 text-sm font-medium text-yellow-800 hover:text-yellow-900 underline"
+              >
+                Ignorar aviso e continuar cadastro
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -1282,6 +1381,9 @@ function CadastroLivro() {
               setIndexPhotos([])
               setIsProcessingIndexOCR(false)
               setIndexOCRProgress(0)
+              // Limpar estados de duplicata
+              setDuplicateBook(null)
+              setIsCheckingDuplicate(false)
             }}
             className="btn-secondary w-full sm:w-auto"
             disabled={isSubmitting}
