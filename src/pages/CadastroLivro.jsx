@@ -6,7 +6,8 @@
 
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { Settings, Plus, Edit2, Trash2, X, Check, Camera, Loader } from "lucide-react"
+import { Settings, Plus, Edit2, Trash2, X, Check, Camera, Loader, Crop } from "lucide-react"
+import ImageCropModal from "../components/ImageCropModal"
 
 function CadastroLivro() {
   const [formData, setFormData] = useState({
@@ -70,6 +71,11 @@ function CadastroLivro() {
   // Estados para detecção de duplicatas
   const [duplicateBook, setDuplicateBook] = useState(null)
   const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false)
+
+  // Estados para recorte de imagem
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [imageToCrop, setImageToCrop] = useState(null)
+  const [cropContext, setCropContext] = useState(null) // {type: 'cover'|'index', photoId?: number}
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -312,6 +318,65 @@ function CadastroLivro() {
     }
   }
 
+  // Função para abrir modal de recorte para foto da capa
+  const handleCropBookPhoto = (photoId) => {
+    const photo = bookPhotos.find(p => p.id === photoId)
+    if (photo && photo.preview) {
+      setImageToCrop(photo.preview)
+      setCropContext({ type: 'cover', photoId })
+      setShowCropModal(true)
+    }
+  }
+
+  // Função para salvar foto recortada
+  const handleSaveCroppedImage = async (croppedBlob) => {
+    if (!cropContext) return
+
+    // Criar File a partir do Blob
+    const file = new File([croppedBlob], `cropped-${Date.now()}.jpg`, { type: 'image/jpeg' })
+
+    // Criar preview
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      const preview = reader.result
+
+      if (cropContext.type === 'cover') {
+        // Atualizar foto da capa
+        setBookPhotos(prev => prev.map(p =>
+          p.id === cropContext.photoId
+            ? { ...p, file, preview }
+            : p
+        ))
+
+        // Se é a foto de capa atual, processar OCR novamente
+        const photoIndex = bookPhotos.findIndex(p => p.id === cropContext.photoId)
+        if (photoIndex === coverPhotoIndex) {
+          processImageOCR(file)
+        }
+      } else if (cropContext.type === 'index') {
+        // Atualizar foto do índice
+        setIndexPhotos(prev => prev.map(p =>
+          p.id === cropContext.photoId
+            ? { ...p, file, preview, text: '' } // Limpar texto ao recortar
+            : p
+        ))
+      }
+    }
+    reader.readAsDataURL(file)
+
+    // Fechar modal
+    setShowCropModal(false)
+    setImageToCrop(null)
+    setCropContext(null)
+  }
+
+  // Função para cancelar recorte
+  const handleCancelCrop = () => {
+    setShowCropModal(false)
+    setImageToCrop(null)
+    setCropContext(null)
+  }
+
   // Funções para fotos do índice
   const handleIndexPhotosChange = async (e) => {
     const files = Array.from(e.target.files)
@@ -361,6 +426,16 @@ function CadastroLivro() {
 
       return newArray.map((photo, i) => ({...photo, order: i}))
     })
+  }
+
+  // Função para abrir modal de recorte para foto do índice
+  const handleCropIndexPhoto = (photoId) => {
+    const photo = indexPhotos.find(p => p.id === photoId)
+    if (photo && photo.preview) {
+      setImageToCrop(photo.preview)
+      setCropContext({ type: 'index', photoId })
+      setShowCropModal(true)
+    }
   }
 
   // OCR para fotos do índice - TRANSCRIÇÃO LITERAL
@@ -828,11 +903,20 @@ function CadastroLivro() {
                           </div>
                         )}
 
-                        {/* Botão remover */}
+                        {/* Botões de ação */}
+                        <button
+                          type="button"
+                          onClick={() => handleCropBookPhoto(photo.id)}
+                          className="absolute top-1 left-1 bg-blue-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-600"
+                          title="Recortar foto"
+                        >
+                          <Crop className="h-4 w-4" />
+                        </button>
                         <button
                           type="button"
                           onClick={() => handleRemoveBookPhoto(photo.id)}
                           className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                          title="Remover foto"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -1149,6 +1233,14 @@ function CadastroLivro() {
 
                       {/* Botões de controle */}
                       <div className="flex flex-col gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleCropIndexPhoto(photo.id)}
+                          className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+                          title="Recortar"
+                        >
+                          <Crop className="h-5 w-5" />
+                        </button>
                         <button
                           type="button"
                           onClick={() => handleReorderIndexPhoto(photo.id, 'up')}
@@ -1513,6 +1605,15 @@ function CadastroLivro() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal de Recorte de Imagem */}
+      {showCropModal && imageToCrop && (
+        <ImageCropModal
+          image={imageToCrop}
+          onSave={handleSaveCroppedImage}
+          onCancel={handleCancelCrop}
+        />
       )}
     </div>
   )
