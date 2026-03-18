@@ -11,6 +11,16 @@ function ImageCropModal({ image, onSave, onCancel }) {
   const [zoom, setZoom] = useState(1)
   const [rotation, setRotation] = useState(0)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
+  const [aspectRatio, setAspectRatio] = useState(null) // null = livre
+
+  // Opções de proporção
+  const aspectOptions = [
+    { label: 'Livre', value: null },
+    { label: 'Capa 3:4', value: 3 / 4 },
+    { label: 'Quadrado 1:1', value: 1 },
+    { label: 'Foto 4:3', value: 4 / 3 },
+    { label: 'Retrato 9:16', value: 9 / 16 },
+  ]
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels)
@@ -94,19 +104,25 @@ function ImageCropModal({ image, onSave, onCancel }) {
     setCrop({ x: 0, y: 0 })
     setZoom(1)
     setRotation(0)
+    setAspectRatio(null)
   }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex flex-col">
       {/* Header */}
-      <div className="bg-gray-900 text-white px-4 py-3 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Ajustar Foto</h2>
-        <button
-          onClick={onCancel}
-          className="text-gray-300 hover:text-white transition-colors"
-        >
-          <X className="h-6 w-6" />
-        </button>
+      <div className="bg-gray-900 text-white px-4 py-3">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-lg font-semibold">Recortar Foto</h2>
+          <button
+            onClick={onCancel}
+            className="text-gray-300 hover:text-white transition-colors"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        <p className="text-sm text-gray-400">
+          Arraste a imagem para posicionar • Arraste as bordas para redimensionar
+        </p>
       </div>
 
       {/* Área de recorte */}
@@ -116,16 +132,40 @@ function ImageCropModal({ image, onSave, onCancel }) {
           crop={crop}
           zoom={zoom}
           rotation={rotation}
-          aspect={3 / 4} // Proporção comum de capas de livros
+          aspect={aspectRatio}
           onCropChange={setCrop}
           onZoomChange={setZoom}
           onRotationChange={setRotation}
           onCropComplete={onCropComplete}
+          cropShape="rect"
+          showGrid={true}
         />
       </div>
 
       {/* Controles */}
       <div className="bg-gray-900 text-white px-4 py-4 space-y-4">
+        {/* Proporção */}
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Proporção de Recorte
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {aspectOptions.map((option) => (
+              <button
+                key={option.label}
+                onClick={() => setAspectRatio(option.value)}
+                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                  aspectRatio === option.value
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Zoom */}
         <div>
           <label className="block text-sm font-medium mb-2">
