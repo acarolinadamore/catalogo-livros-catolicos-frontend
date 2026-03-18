@@ -19,6 +19,7 @@ function Home() {
     categoria: '',
     ano: '',
     indice: '',
+    tags: '',
     content_type: '',
     intercessor: '',
     pastoral_use: '',
@@ -128,6 +129,15 @@ function Home() {
           );
         }
 
+        if (filters.tags) {
+          const query = normalizeText(filters.tags);
+          resultado = resultado.filter(livro =>
+            normalizeText(livro.tags).includes(query) ||
+            (livro.intercessors && normalizeText(livro.intercessors.join(' ')).includes(query)) ||
+            (livro.pastoral_uses && normalizeText(livro.pastoral_uses.join(' ')).includes(query))
+          );
+        }
+
         setBooks(resultado);
       } else {
         setError('Erro ao buscar livros');
@@ -157,6 +167,7 @@ function Home() {
       categoria: '',
       ano: '',
       indice: '',
+      tags: '',
       content_type: '',
       intercessor: '',
       pastoral_use: '',
@@ -178,18 +189,18 @@ function Home() {
       {/* Conteúdo principal */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filtros em cima dos cards - sempre abertos */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Filtros de Busca</h2>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Filtros de Busca</h2>
             <button
               onClick={handleClearFilters}
-              className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+              className="text-sm text-primary-600 hover:text-primary-700 font-medium text-left sm:text-right"
             >
               Limpar filtros
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
             {/* Filtro: Título */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -277,25 +288,19 @@ function Home() {
               />
             </div>
 
-            {/* Filtro: Editora (select) */}
+            {/* Filtro: Tags */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Filtrar Editora
+                Tags
               </label>
-              <select
-                value={filters.publisher || ''}
-                onChange={(e) => handleFilterChange('publisher', e.target.value)}
+              <input
+                type="text"
+                value={filters.tags}
+                onChange={(e) => handleFilterChange('tags', e.target.value)}
+                placeholder="Buscar por tags..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500"
-              >
-                <option value="">Todas</option>
-                {filterOptions.publishers?.map(publisher => (
-                  <option key={publisher} value={publisher}>{publisher}</option>
-                ))}
-              </select>
+              />
             </div>
-
-            {/* Espaço reservado para manter grid */}
-            <div></div>
           </div>
         </div>
 
