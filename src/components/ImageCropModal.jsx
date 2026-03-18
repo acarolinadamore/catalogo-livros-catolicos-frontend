@@ -1,15 +1,14 @@
 import { useState, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
-import { Check, X, RotateCw } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 
 /**
- * Modal de recorte de imagem
- * Permite recortar, rotacionar e ajustar a imagem antes de salvar
+ * Modal de recorte de imagem simples
+ * Permite apenas recortar/selecionar área da imagem
  */
 function ImageCropModal({ image, onSave, onCancel }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1)
-  const [rotation, setRotation] = useState(0)
+  const [zoom, setZoom] = useState(1) // Fixo em 1, sem controle
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
   const [aspectRatio, setAspectRatio] = useState(null) // null = livre
 
@@ -17,9 +16,7 @@ function ImageCropModal({ image, onSave, onCancel }) {
   const aspectOptions = [
     { label: 'Livre', value: null },
     { label: 'Capa 3:4', value: 3 / 4 },
-    { label: 'Quadrado 1:1', value: 1 },
-    { label: 'Foto 4:3', value: 4 / 3 },
-    { label: 'Retrato 9:16', value: 9 / 16 },
+    { label: 'Quadrado', value: 1 },
   ]
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
@@ -39,27 +36,9 @@ function ImageCropModal({ image, onSave, onCancel }) {
         imageObj.onerror = reject
       })
 
-      // Calcular dimensões do canvas com rotação
-      const radians = (rotation * Math.PI) / 180
-      const sin = Math.abs(Math.sin(radians))
-      const cos = Math.abs(Math.cos(radians))
-
-      const rotatedWidth = imageObj.width * cos + imageObj.height * sin
-      const rotatedHeight = imageObj.width * sin + imageObj.height * cos
-
       // Configurar canvas para a área recortada
       canvas.width = croppedAreaPixels.width
       canvas.height = croppedAreaPixels.height
-
-      // Salvar contexto
-      ctx.save()
-
-      // Aplicar rotação se necessário
-      if (rotation !== 0) {
-        ctx.translate(canvas.width / 2, canvas.height / 2)
-        ctx.rotate(radians)
-        ctx.translate(-canvas.width / 2, -canvas.height / 2)
-      }
 
       // Desenhar imagem recortada
       ctx.drawImage(
@@ -73,9 +52,6 @@ function ImageCropModal({ image, onSave, onCancel }) {
         croppedAreaPixels.width,
         croppedAreaPixels.height
       )
-
-      // Restaurar contexto
-      ctx.restore()
 
       // Converter canvas para blob
       return new Promise((resolve) => {
@@ -96,14 +72,8 @@ function ImageCropModal({ image, onSave, onCancel }) {
     }
   }
 
-  const handleRotate = () => {
-    setRotation((prev) => (prev + 90) % 360)
-  }
-
   const handleReset = () => {
     setCrop({ x: 0, y: 0 })
-    setZoom(1)
-    setRotation(0)
     setAspectRatio(null)
   }
 
@@ -130,12 +100,9 @@ function ImageCropModal({ image, onSave, onCancel }) {
         <Cropper
           image={image}
           crop={crop}
-          zoom={zoom}
-          rotation={rotation}
+          zoom={1}
           aspect={aspectRatio}
           onCropChange={setCrop}
-          onZoomChange={setZoom}
-          onRotationChange={setRotation}
           onCropComplete={onCropComplete}
           cropShape="rect"
           showGrid={true}
@@ -147,14 +114,14 @@ function ImageCropModal({ image, onSave, onCancel }) {
         {/* Proporção */}
         <div>
           <label className="block text-sm font-medium mb-2">
-            Proporção de Recorte
+            Formato do Recorte
           </label>
           <div className="flex flex-wrap gap-2">
             {aspectOptions.map((option) => (
               <button
                 key={option.label}
                 onClick={() => setAspectRatio(option.value)}
-                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                   aspectRatio === option.value
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -163,47 +130,6 @@ function ImageCropModal({ image, onSave, onCancel }) {
                 {option.label}
               </button>
             ))}
-          </div>
-        </div>
-
-        {/* Zoom */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Zoom: {Math.round(zoom * 100)}%
-          </label>
-          <input
-            type="range"
-            min="1"
-            max="3"
-            step="0.1"
-            value={zoom}
-            onChange={(e) => setZoom(parseFloat(e.target.value))}
-            className="w-full"
-          />
-        </div>
-
-        {/* Rotação */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Rotação: {rotation}°
-          </label>
-          <div className="flex items-center gap-3">
-            <input
-              type="range"
-              min="0"
-              max="360"
-              step="1"
-              value={rotation}
-              onChange={(e) => setRotation(parseInt(e.target.value))}
-              className="flex-1"
-            />
-            <button
-              onClick={handleRotate}
-              className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
-              title="Rotacionar 90°"
-            >
-              <RotateCw className="h-5 w-5" />
-            </button>
           </div>
         </div>
 
