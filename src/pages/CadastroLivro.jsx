@@ -77,6 +77,9 @@ function CadastroLivro() {
   const [imageToCrop, setImageToCrop] = useState(null)
   const [cropContext, setCropContext] = useState(null) // {type: 'cover'|'index', photoId?: number}
 
+  // Estados para geração de descrição
+  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false)
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -375,6 +378,69 @@ function CadastroLivro() {
     setShowCropModal(false)
     setImageToCrop(null)
     setCropContext(null)
+  }
+
+  // Função para gerar descrição usando Claude AI
+  const handleGenerateDescription = async () => {
+    // Verificar se há informações mínimas para gerar descrição
+    if (!formData.titulo) {
+      setSubmitMessage({
+        type: "error",
+        text: "É necessário preencher ao menos o título para gerar uma descrição."
+      })
+      setTimeout(() => setSubmitMessage({ type: "", text: "" }), 3000)
+      return
+    }
+
+    try {
+      setIsGeneratingDescription(true)
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+
+      const response = await fetch(`${API_BASE_URL}/ocr/generate-description`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          titulo: formData.titulo,
+          autor: formData.autor,
+          editora: formData.editora,
+          ano: formData.ano,
+          categoria: formData.categoria
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.data && data.data.descricao) {
+        // Preencher campo descrição
+        setFormData((prev) => ({
+          ...prev,
+          descricao: data.data.descricao
+        }))
+
+        setSubmitMessage({
+          type: "success",
+          text: "Descrição gerada com sucesso! Você pode editá-la se desejar."
+        })
+        setTimeout(() => setSubmitMessage({ type: "", text: "" }), 4000)
+      } else {
+        setSubmitMessage({
+          type: "error",
+          text: data.error || "Não foi possível gerar a descrição. Tente novamente."
+        })
+        setTimeout(() => setSubmitMessage({ type: "", text: "" }), 3000)
+      }
+    } catch (error) {
+      console.error('Erro ao gerar descrição:', error)
+      setSubmitMessage({
+        type: "error",
+        text: "Erro ao gerar descrição. Verifique sua conexão e tente novamente."
+      })
+      setTimeout(() => setSubmitMessage({ type: "", text: "" }), 3000)
+    } finally {
+      setIsGeneratingDescription(false)
+    }
   }
 
   // Funções para fotos do índice
@@ -1306,21 +1372,45 @@ function CadastroLivro() {
 
           {/* Descrição */}
           <div>
-            <label
-              htmlFor="descricao"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Descrição{" "}
-              <span className="text-gray-400 text-xs font-normal">
-                (opcional)
-              </span>
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label
+                htmlFor="descricao"
+                className="text-sm font-medium text-gray-700"
+              >
+                Descrição{" "}
+                <span className="text-gray-400 text-xs font-normal">
+                  (opcional)
+                </span>
+              </label>
+              <button
+                type="button"
+                onClick={handleGenerateDescription}
+                disabled={isGeneratingDescription || !formData.titulo}
+                className="text-primary-600 hover:text-primary-700 disabled:text-gray-400 disabled:cursor-not-allowed text-sm font-medium transition-colors flex items-center gap-1"
+                title={!formData.titulo ? "Preencha o título primeiro" : "Gerar descrição com IA"}
+              >
+                {isGeneratingDescription ? (
+                  <>
+                    <Loader className="h-4 w-4 animate-spin" />
+                    Gerando...
+                  </>
+                ) : (
+                  <>
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                    Sugerir
+                  </>
+                )}
+              </button>
+            </div>
             <textarea
               id="descricao"
               name="descricao"
               value={formData.descricao}
               onChange={handleChange}
               rows="5"
+              placeholder="Descreva brevemente o conteúdo do livro, ou clique em 'Sugerir' para gerar automaticamente"
               className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
             />
           </div>
