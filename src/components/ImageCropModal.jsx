@@ -1,84 +1,35 @@
-import { useState, useCallback } from 'react'
-import Cropper from 'react-easy-crop'
+import { useRef } from 'react'
+import Cropper from 'react-cropper'
+import 'cropperjs/dist/cropper.css'
 import { Check, X } from 'lucide-react'
 
 /**
- * Modal de recorte de imagem simples
- * Permite apenas recortar/selecionar área da imagem
+ * Modal de recorte de imagem com 4 pontos ajustáveis
+ * Permite arrastar os 4 cantos livremente para recortar
  */
 function ImageCropModal({ image, onSave, onCancel }) {
-  const [crop, setCrop] = useState({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1) // Fixo em 1, sem controle
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
-  const [aspectRatio, setAspectRatio] = useState(null) // null = livre
+  const cropperRef = useRef(null)
 
-  // Opções de proporção
-  const aspectOptions = [
-    { label: 'Livre', value: null },
-    { label: 'Capa 3:4', value: 3 / 4 },
-    { label: 'Quadrado', value: 1 },
-  ]
-
-  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels)
-  }, [])
-
-  const createCroppedImage = async () => {
-    try {
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-
-      const imageObj = new Image()
-      imageObj.src = image
-
-      await new Promise((resolve, reject) => {
-        imageObj.onload = resolve
-        imageObj.onerror = reject
-      })
-
-      // Configurar canvas para a área recortada
-      canvas.width = croppedAreaPixels.width
-      canvas.height = croppedAreaPixels.height
-
-      // Desenhar imagem recortada
-      ctx.drawImage(
-        imageObj,
-        croppedAreaPixels.x,
-        croppedAreaPixels.y,
-        croppedAreaPixels.width,
-        croppedAreaPixels.height,
-        0,
-        0,
-        croppedAreaPixels.width,
-        croppedAreaPixels.height
-      )
-
-      // Converter canvas para blob
-      return new Promise((resolve) => {
-        canvas.toBlob((blob) => {
-          resolve(blob)
-        }, 'image/jpeg', 0.95)
-      })
-    } catch (error) {
-      console.error('Erro ao recortar imagem:', error)
-      return null
-    }
-  }
-
-  const handleSave = async () => {
-    const croppedBlob = await createCroppedImage()
-    if (croppedBlob) {
-      onSave(croppedBlob)
+  const handleCrop = () => {
+    const cropper = cropperRef.current?.cropper
+    if (cropper) {
+      cropper.getCroppedCanvas().toBlob((blob) => {
+        if (blob) {
+          onSave(blob)
+        }
+      }, 'image/jpeg', 0.95)
     }
   }
 
   const handleReset = () => {
-    setCrop({ x: 0, y: 0 })
-    setAspectRatio(null)
+    const cropper = cropperRef.current?.cropper
+    if (cropper) {
+      cropper.reset()
+    }
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-95 z-50 flex flex-col">
       {/* Header */}
       <div className="bg-gray-900 text-white px-4 py-3">
         <div className="flex items-center justify-between mb-2">
@@ -91,55 +42,40 @@ function ImageCropModal({ image, onSave, onCancel }) {
           </button>
         </div>
         <p className="text-sm text-gray-400">
-          Arraste a imagem para posicionar • Arraste as bordas para redimensionar
+          Arraste os cantos para ajustar a área de recorte
         </p>
       </div>
 
       {/* Área de recorte */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative overflow-hidden">
         <Cropper
-          image={image}
-          crop={crop}
-          zoom={1}
-          aspect={aspectRatio}
-          onCropChange={setCrop}
-          onCropComplete={onCropComplete}
-          cropShape="rect"
-          showGrid={true}
+          ref={cropperRef}
+          src={image}
+          style={{ height: '100%', width: '100%' }}
+          aspectRatio={NaN} // Livre, sem proporção fixa
+          guides={true}
+          viewMode={1}
+          background={false}
+          responsive={true}
+          autoCropArea={0.8}
+          checkOrientation={false}
+          zoomable={false}
+          scalable={false}
+          rotatable={false}
+          cropBoxMovable={true}
+          cropBoxResizable={true}
+          dragMode="move"
         />
       </div>
 
-      {/* Controles */}
-      <div className="bg-gray-900 text-white px-4 py-4 space-y-4">
-        {/* Proporção */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Formato do Recorte
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {aspectOptions.map((option) => (
-              <button
-                key={option.label}
-                onClick={() => setAspectRatio(option.value)}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                  aspectRatio === option.value
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Botões de ação */}
-        <div className="flex gap-3 pt-2">
+      {/* Botões de ação */}
+      <div className="bg-gray-900 text-white px-4 py-4">
+        <div className="flex gap-3">
           <button
             onClick={handleReset}
             className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors"
           >
-            Resetar
+            Desfazer
           </button>
           <button
             onClick={onCancel}
@@ -149,11 +85,11 @@ function ImageCropModal({ image, onSave, onCancel }) {
             Cancelar
           </button>
           <button
-            onClick={handleSave}
+            onClick={handleCrop}
             className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             <Check className="h-5 w-5" />
-            Salvar
+            Recortar
           </button>
         </div>
       </div>
