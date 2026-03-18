@@ -196,6 +196,8 @@ function ListarLivros() {
       color: state.isSelected ? 'white' : '#111827',
       cursor: 'pointer',
       fontSize: '0.875rem',
+      textAlign: 'left',
+      fontWeight: 'normal',
       '&:active': {
         backgroundColor: '#3b82f6'
       }
@@ -213,7 +215,16 @@ function ListarLivros() {
     singleValue: (base) => ({
       ...base,
       color: '#111827',
-      fontSize: '0.875rem'
+      fontSize: '0.875rem',
+      fontWeight: 'normal'
+    }),
+    multiValue: (base) => ({
+      ...base,
+      fontWeight: 'normal'
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      fontWeight: 'normal'
     }),
     clearIndicator: (base) => ({
       ...base,
