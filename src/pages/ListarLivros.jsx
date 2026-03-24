@@ -236,6 +236,13 @@ function ListarLivros() {
     dropdownIndicator: (base) => ({
       ...base,
       padding: '4px'
+    }),
+    noOptionsMessage: (base) => ({
+      ...base,
+      fontSize: '0.75rem',
+      fontWeight: '400',
+      color: '#9ca3af',
+      padding: '8px 12px'
     })
   };
 
