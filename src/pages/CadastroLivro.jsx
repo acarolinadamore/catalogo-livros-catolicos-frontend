@@ -1202,48 +1202,189 @@ function CadastroLivro() {
             />
           </div>
 
-          {/* Editora e Ano - Grid 2 colunas */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="min-w-0">
+          {/* Editora */}
+          <div>
+            <label
+              htmlFor="editora"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Editora{" "}
+              <span className="text-gray-400 text-xs font-normal">
+                (opcional)
+              </span>
+            </label>
+            <input
+              type="text"
+              id="editora"
+              name="editora"
+              value={formData.editora}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
+            />
+          </div>
+
+          {/* Ano */}
+          <div>
+            <label
+              htmlFor="ano"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Ano de Publicação{" "}
+              <span className="text-gray-400 text-xs font-normal">
+                (opcional)
+              </span>
+            </label>
+            <input
+              type="number"
+              id="ano"
+              name="ano"
+              value={formData.ano}
+              onChange={handleChange}
+              min="1000"
+              max="2100"
+              className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
+            />
+          </div>
+
+          {/* Descrição */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
               <label
-                htmlFor="editora"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                htmlFor="descricao"
+                className="text-sm font-medium text-gray-700"
               >
-                Editora{" "}
+                Descrição{" "}
                 <span className="text-gray-400 text-xs font-normal">
                   (opcional)
                 </span>
               </label>
+              <button
+                type="button"
+                onClick={handleGenerateDescription}
+                disabled={isGeneratingDescription || !formData.titulo}
+                className="text-primary-600 hover:text-primary-700 disabled:text-gray-400 disabled:cursor-not-allowed text-sm font-medium transition-colors flex items-center gap-1"
+                title={!formData.titulo ? "Preencha o título primeiro" : "Gerar descrição com IA"}
+              >
+                {isGeneratingDescription ? (
+                  <>
+                    <Loader className="h-4 w-4 animate-spin" />
+                    Gerando...
+                  </>
+                ) : (
+                  <>
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                    Sugerir
+                  </>
+                )}
+              </button>
+            </div>
+            <textarea
+              id="descricao"
+              name="descricao"
+              value={formData.descricao}
+              onChange={handleChange}
+              rows="5"
+              className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
+            />
+          </div>
+
+          {/* Categoria */}
+          <div>
+            <div className="flex items-center justify-between mb-2 gap-2">
+              <label
+                htmlFor="categoria"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Categoria{" "}
+                <span className="text-gray-400 text-xs font-normal">
+                  (opcional)
+                </span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowCategoryModal(true)}
+                className="text-primary-600 hover:text-primary-700 flex items-center gap-1 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
+                title="Gerenciar categorias"
+              >
+                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Gerenciar</span>
+                <span className="xs:hidden">Editar</span>
+              </button>
+            </div>
+            <select
+              id="categoria"
+              name="categoria"
+              value={formData.categoria}
+              onChange={handleChange}
+              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 pr-8 sm:pr-10 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 text-sm sm:text-base bg-white appearance-none min-h-[42px]"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                backgroundPosition: 'right 0.5rem center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '1.5em 1.5em'
+              }}
+            >
+              <option value="">Selecione uma categoria</option>
+              {categorias.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Tags */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Tags{" "}
+              <span className="text-gray-400 text-xs font-normal">
+                (opcional)
+              </span>
+            </label>
+            <p className="text-xs text-gray-500 mb-2">
+              Tags são palavras-chave personalizadas para ajudar você a organizar e encontrar seus livros.
+            </p>
+
+            {/* Chips das tags existentes */}
+            {tagsList.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {tagsList.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium border"
+                    style={{ color: '#5A89B4', borderColor: '#5A89B4' }}
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTag(tag)}
+                      className="hover:opacity-80 transition-opacity"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Input para adicionar nova tag */}
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
-                id="editora"
-                name="editora"
-                value={formData.editora}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyPress={handleTagInputKeyPress}
+                placeholder="ex: leitura espiritual"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
-            </div>
-
-            <div className="min-w-0">
-              <label
-                htmlFor="ano"
-                className="block text-sm font-medium text-gray-700 mb-2"
+              <button
+                type="button"
+                onClick={handleAddTag}
+                className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-1 w-full sm:w-auto"
               >
-                Ano de Publicação{" "}
-                <span className="text-gray-400 text-xs font-normal">
-                  (opcional)
-                </span>
-              </label>
-              <input
-                type="number"
-                id="ano"
-                name="ano"
-                value={formData.ano}
-                onChange={handleChange}
-                min="1000"
-                max="2100"
-                className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
-              />
+                <Plus className="h-4 w-4" />
+                Adicionar
+              </button>
             </div>
           </div>
 
@@ -1436,148 +1577,6 @@ function CadastroLivro() {
               className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
             />
           </div>
-
-          {/* Descrição */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label
-                htmlFor="descricao"
-                className="text-sm font-medium text-gray-700"
-              >
-                Descrição{" "}
-                <span className="text-gray-400 text-xs font-normal">
-                  (opcional)
-                </span>
-              </label>
-              <button
-                type="button"
-                onClick={handleGenerateDescription}
-                disabled={isGeneratingDescription || !formData.titulo}
-                className="text-primary-600 hover:text-primary-700 disabled:text-gray-400 disabled:cursor-not-allowed text-sm font-medium transition-colors flex items-center gap-1"
-                title={!formData.titulo ? "Preencha o título primeiro" : "Gerar descrição com IA"}
-              >
-                {isGeneratingDescription ? (
-                  <>
-                    <Loader className="h-4 w-4 animate-spin" />
-                    Gerando...
-                  </>
-                ) : (
-                  <>
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
-                    Sugerir
-                  </>
-                )}
-              </button>
-            </div>
-            <textarea
-              id="descricao"
-              name="descricao"
-              value={formData.descricao}
-              onChange={handleChange}
-              rows="5"
-              className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
-            />
-          </div>
-
-          {/* Categoria */}
-          <div>
-            <div className="flex items-center justify-between mb-2 gap-2">
-              <label
-                htmlFor="categoria"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Categoria{" "}
-                <span className="text-gray-400 text-xs font-normal">
-                  (opcional)
-                </span>
-              </label>
-              <button
-                type="button"
-                onClick={() => setShowCategoryModal(true)}
-                className="text-primary-600 hover:text-primary-700 flex items-center gap-1 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
-                title="Gerenciar categorias"
-              >
-                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden xs:inline">Gerenciar</span>
-                <span className="xs:hidden">Editar</span>
-              </button>
-            </div>
-            <select
-              id="categoria"
-              name="categoria"
-              value={formData.categoria}
-              onChange={handleChange}
-              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 pr-8 sm:pr-10 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 text-sm sm:text-base bg-white appearance-none min-h-[42px]"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                backgroundPosition: 'right 0.5rem center',
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: '1.5em 1.5em'
-              }}
-            >
-              <option value="">Selecione uma categoria</option>
-              {categorias.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Tags */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tags{" "}
-              <span className="text-gray-400 text-xs font-normal">
-                (opcional)
-              </span>
-            </label>
-            <p className="text-xs text-gray-500 mb-2">
-              Tags são palavras-chave personalizadas para ajudar você a organizar e encontrar seus livros.
-            </p>
-
-            {/* Chips das tags existentes */}
-            {tagsList.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3">
-                {tagsList.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium border"
-                    style={{ color: '#5A89B4', borderColor: '#5A89B4' }}
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTag(tag)}
-                      className="hover:opacity-80 transition-opacity"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* Input para adicionar nova tag */}
-            <div className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="text"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={handleTagInputKeyPress}
-                placeholder="ex: leitura espiritual"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-              <button
-                type="button"
-                onClick={handleAddTag}
-                className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-1 w-full sm:w-auto"
-              >
-                <Plus className="h-4 w-4" />
-                Adicionar
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Barra de progresso */}
@@ -1640,12 +1639,67 @@ function CadastroLivro() {
           </button>
           <button
             type="submit"
-            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+            className="px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Cadastrando..." : "Cadastrar Livro"}
           </button>
         </div>
+
+        {/* Aviso de livro duplicado (também abaixo dos botões) */}
+        {duplicateBook && (
+          <div className="mt-6 p-5 rounded-lg bg-yellow-50 border-2 border-yellow-400 shadow-sm">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <svg className="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-yellow-900 mb-2">
+                  Este livro já está cadastrado!
+                </h3>
+                <p className="text-sm text-yellow-800 mb-3">
+                  Encontramos um livro com título e autor similares no banco de dados:
+                </p>
+                <div className="bg-white rounded-lg p-4 border border-yellow-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="font-semibold text-gray-700">Título:</span>
+                      <p className="text-gray-900">{duplicateBook.titulo}</p>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-gray-700">Autor:</span>
+                      <p className="text-gray-900">{duplicateBook.autor}</p>
+                    </div>
+                    {duplicateBook.editora && (
+                      <div>
+                        <span className="font-semibold text-gray-700">Editora:</span>
+                        <p className="text-gray-900">{duplicateBook.editora}</p>
+                      </div>
+                    )}
+                    {duplicateBook.ano && (
+                      <div>
+                        <span className="font-semibold text-gray-700">Ano:</span>
+                        <p className="text-gray-900">{duplicateBook.ano}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <p className="text-xs text-yellow-700 mt-3">
+                  Se você continuar o cadastro, terá um livro duplicado no banco de dados.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setDuplicateBook(null)}
+                  className="mt-3 text-sm font-medium text-yellow-800 hover:text-yellow-900 underline"
+                >
+                  Ignorar aviso e continuar cadastro
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </form>
 
       {/* Nota informativa */}

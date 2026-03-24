@@ -1201,13 +1201,13 @@ function ListarLivros() {
                           </button>
                         ) : '-'}
                       </td>
-                      <td className="px-3 py-4 text-sm text-gray-500">
+                      <td className="px-3 py-4 text-sm text-gray-500 min-w-[150px]">
                         {livro.tags ? (
-                          <div className="flex flex-wrap gap-1">
+                          <div className="flex flex-wrap gap-1 min-w-0">
                             {livro.tags.split(',').map((tag, index) => (
                               <span
                                 key={index}
-                                className="inline-flex items-center px-2.5 py-0.5 bg-blue-50 rounded-full text-xs font-medium"
+                                className="inline-flex items-center px-2.5 py-0.5 bg-blue-50 rounded-full text-xs font-medium whitespace-nowrap"
                                 style={{ color: '#5A89B4' }}
                               >
                                 {tag.trim()}
