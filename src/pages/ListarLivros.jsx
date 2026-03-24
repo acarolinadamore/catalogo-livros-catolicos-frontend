@@ -11,7 +11,10 @@ import { Eye, Edit2, Trash2, X, Check, Settings, Plus, Search, ExternalLink, Che
 // Função para normalizar texto removendo acentos e convertendo para lowercase
 const normalizeText = (text) => {
   if (!text) return '';
-  return text
+  // Garantir que é string e fazer trim
+  const str = String(text).trim();
+  if (!str) return '';
+  return str
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');

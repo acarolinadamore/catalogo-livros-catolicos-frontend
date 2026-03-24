@@ -62,7 +62,10 @@ function Home() {
   // Função auxiliar para normalizar texto (remover acentos)
   function normalizeText(text) {
     if (!text) return '';
-    return text
+    // Garantir que é string e fazer trim
+    const str = String(text).trim();
+    if (!str) return '';
+    return str
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
@@ -75,8 +78,8 @@ function Home() {
 
     try {
       // Montar parâmetros para API do backend
+      // NÃO enviamos searchQuery para o backend, vamos filtrar localmente com normalização
       const apiParams = {
-        q: searchQuery,
         content_type: filters.content_type,
         publisher: filters.publisher,
         index_search: filters.indice, // Busca específica no índice
@@ -93,6 +96,21 @@ function Home() {
 
       if (response.success) {
         let resultado = response.data;
+
+        // Aplicar busca geral (searchQuery) com normalização
+        // Busca em: título, autor, editora, categoria, tags
+        if (searchQuery) {
+          const query = normalizeText(searchQuery);
+          resultado = resultado.filter(livro =>
+            normalizeText(livro.title).includes(query) ||
+            normalizeText(livro.author).includes(query) ||
+            normalizeText(livro.publisher).includes(query) ||
+            normalizeText(livro.category).includes(query) ||
+            normalizeText(livro.tags).includes(query) ||
+            (livro.intercessors && normalizeText(livro.intercessors.join(' ')).includes(query)) ||
+            (livro.pastoral_uses && normalizeText(livro.pastoral_uses.join(' ')).includes(query))
+          );
+        }
 
         // Aplicar filtros locais adicionais (título, autor, editora, ano)
         // Esses são aplicados no frontend para maior precisão
